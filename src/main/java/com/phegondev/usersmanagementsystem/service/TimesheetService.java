@@ -18,7 +18,10 @@ import com.phegondev.usersmanagementsystem.repository.AssignmentRepository;
 import com.phegondev.usersmanagementsystem.repository.ProjectRepository;
 import com.phegondev.usersmanagementsystem.repository.TaskRepository;
 import com.phegondev.usersmanagementsystem.repository.TimesheetRepo;
- 
+ import com.phegondev.usersmanagementsystem.repository.UsersRepo;
+import com.phegondev.usersmanagementsystem.service.NotificationService;
+
+
 @Service
 public class TimesheetService {
  
@@ -26,13 +29,18 @@ public class TimesheetService {
 	private final ProjectRepository projectRepository;
 	private final AssignmentRepository assignmentRepository;
 	private final TaskRepository taskRepository;
+    private final NotificationService notificationService;
+
+	private final UsersRepo usersRepo;
  
 	public TimesheetService(TimesheetRepo timesheetRepo, ProjectRepository projectRepository,
-			AssignmentRepository assignmentRepository, TaskRepository taskRepository) {
+			AssignmentRepository assignmentRepository, TaskRepository taskRepository, UsersRepo usersRepo,NotificationService notificationService) {
 		this.timesheetRepo = timesheetRepo;
 		this.projectRepository = projectRepository;
 		this.assignmentRepository = assignmentRepository;
 		this.taskRepository = taskRepository;
+		this.usersRepo = usersRepo;
+		this.notificationService = notificationService;
 	}
  
 	public TimesheetDTO createTimesheet(TimesheetDTO dto) {
@@ -272,27 +280,60 @@ public class TimesheetService {
 		System.out.println("Successfully deleted timesheet with ID: " + id);
 	}
  
-	// submit single timesheet
-	public TimesheetDTO submitTimesheet(Long id) {
-		System.out.println("Submitting timesheet with ID: " + id);
-		Timesheet existing = timesheetRepo.findById(id)
-				.orElseThrow(() -> new RuntimeException("Timesheet not found with ID: " + id));
+	// // submit single timesheet
+	// public TimesheetDTO submitTimesheet(Long id) {
+	// 	System.out.println("Submitting timesheet with ID: " + id);
+	// 	Timesheet existing = timesheetRepo.findById(id)
+	// 			.orElseThrow(() -> new RuntimeException("Timesheet not found with ID: " + id));
  
-		System.out.println("Current status: " + existing.getStatus());
+	// 	System.out.println("Current status: " + existing.getStatus());
  
-		// Only allow submission if in DRAFT status
-		if (!"DRAFT".equals(existing.getStatus()) && !"REJECTED".equals(existing.getStatus())) {
-			throw new RuntimeException("Only DRAFT or REJECTED timesheets can be submitted");
-		}
+	// 	// Only allow submission if in DRAFT status
+	// 	if (!"DRAFT".equals(existing.getStatus()) && !"REJECTED".equals(existing.getStatus())) {
+	// 		throw new RuntimeException("Only DRAFT or REJECTED timesheets can be submitted");
+	// 	}
  
-		existing.setStatus("SUBMITTED");
-		existing.setSubmitted_at(LocalDateTime.now());
-		Timesheet updated = timesheetRepo.save(existing);
+	// 	existing.setStatus("SUBMITTED");
+	// 	existing.setSubmitted_at(LocalDateTime.now());
+	// 	Timesheet updated = timesheetRepo.save(existing);
  
-		System.out.println("Updated status: " + updated.getStatus());
-		return mapToDTO(updated);
-	}
+	// 	System.out.println("Updated status: " + updated.getStatus());
+	// 	return mapToDTO(updated);
+	// }
  
+
+
+
+	// Modify submitTimesheet method
+public TimesheetDTO submitTimesheet(Long id) {
+    System.out.println("Submitting timesheet with ID: " + id);
+    Timesheet existing = timesheetRepo.findById(id)
+            .orElseThrow(() -> new RuntimeException("Timesheet not found with ID: " + id));
+
+    System.out.println("Current status: " + existing.getStatus());
+
+    if (!"DRAFT".equals(existing.getStatus()) && !"REJECTED".equals(existing.getStatus())) {
+        throw new RuntimeException("Only DRAFT or REJECTED timesheets can be submitted");
+    }
+
+    existing.setStatus("SUBMITTED");
+    existing.setSubmitted_at(LocalDateTime.now());
+    Timesheet updated = timesheetRepo.save(existing);
+
+    // Send notification to admin
+    String adminId = "admin"; // Or fetch admin ID from database
+    String message = existing.getEmpName() + " has submitted timesheet " + existing.getTimesheetId();
+    notificationService.createNotification(
+        message,
+        adminId,
+        existing.getEmpId(),
+        "SUBMISSION",
+        existing.getTimesheetId()
+    );
+
+    System.out.println("Updated status: " + updated.getStatus());
+    return mapToDTO(updated);
+}
  
 	public List<TimesheetDTO> getAllNonDraftTimesheets() {
 	    System.out.println("[Service] Calling repository to fetch timesheets where status != 'DRAFT'");
@@ -331,27 +372,66 @@ public class TimesheetService {
 	//     System.out.println("[Service] Status update complete for Timesheet ID: " + timesheetId);
 	// }
 
-	public void updateStatus(String timesheetId, String status) {
-	    System.out.println("[Service] Updating status for Timesheet ID: " + timesheetId);
+	// public void updateStatus(String timesheetId, String status) {
+	//     System.out.println("[Service] Updating status for Timesheet ID: " + timesheetId);
  
-	    Timesheet timesheet = timesheetRepo.findByTimesheetId(timesheetId)
-	        .orElseThrow(() -> new RuntimeException("Timesheet not found for ID: " + timesheetId));
+	//     Timesheet timesheet = timesheetRepo.findByTimesheetId(timesheetId)
+	//         .orElseThrow(() -> new RuntimeException("Timesheet not found for ID: " + timesheetId));
  
-	    System.out.println("[Service] Current status: " + timesheet.getStatus());
-	    System.out.println("[Service] New status to set: " + status);
+	//     System.out.println("[Service] Current status: " + timesheet.getStatus());
+	//     System.out.println("[Service] New status to set: " + status);
  
-	    // Optionally validate allowed statuses
-	    if (!status.equalsIgnoreCase("APPROVED") && !status.equalsIgnoreCase("REJECTED")) {
-	        throw new IllegalArgumentException("Invalid status. Allowed: APPROVED or REJECTED");
-	    }
+	//     // Optionally validate allowed statuses
+	//     if (!status.equalsIgnoreCase("APPROVED") && !status.equalsIgnoreCase("REJECTED")) {
+	//         throw new IllegalArgumentException("Invalid status. Allowed: APPROVED or REJECTED");
+	//     }
  
-	    timesheet.setStatus(status.toUpperCase());
-	    timesheet.setUpdatedAt(LocalDateTime.now());
+	//     timesheet.setStatus(status.toUpperCase());
+	//     timesheet.setUpdatedAt(LocalDateTime.now());
  
-	    timesheetRepo.save(timesheet);
+	//     timesheetRepo.save(timesheet);
  
-	    System.out.println("[Service] Status update complete for Timesheet ID: " + timesheetId);
-	}
+	//     System.out.println("[Service] Status update complete for Timesheet ID: " + timesheetId);
+	// }
+
+
+
+	// Modify updateStatus method
+public void updateStatus(String timesheetId, String status) {
+    System.out.println("[Service] Updating status for Timesheet ID: " + timesheetId);
+
+    Timesheet timesheet = timesheetRepo.findByTimesheetId(timesheetId)
+        .orElseThrow(() -> new RuntimeException("Timesheet not found for ID: " + timesheetId));
+
+    System.out.println("[Service] Current status: " + timesheet.getStatus());
+    System.out.println("[Service] New status to set: " + status);
+
+    if (!status.equalsIgnoreCase("APPROVED") && !status.equalsIgnoreCase("REJECTED")) {
+        throw new IllegalArgumentException("Invalid status. Allowed: APPROVED or REJECTED");
+    }
+
+    timesheet.setStatus(status.toUpperCase());
+    timesheet.setUpdatedAt(LocalDateTime.now());
+    timesheetRepo.save(timesheet);
+
+    // Send notification to user
+    String message;
+    if (status.equalsIgnoreCase("APPROVED")) {
+        message = "Your timesheet " + timesheetId + " has been approved. Thank you!";
+    } else {
+        message = "Your timesheet " + timesheetId + " has been rejected. Please resubmit.";
+    }
+    
+    notificationService.createNotification(
+        message,
+        timesheet.getEmpId(),
+        "admin", // or actual admin ID
+        status.equalsIgnoreCase("APPROVED") ? "APPROVAL" : "REJECTION",
+        timesheetId
+    );
+
+    System.out.println("[Service] Status update complete for Timesheet ID: " + timesheetId);
+}
  
  
  

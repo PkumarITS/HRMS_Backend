@@ -1,5 +1,6 @@
 package com.phegondev.usersmanagementsystem.repository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -27,6 +28,8 @@ public interface TimesheetRepo extends JpaRepository<Timesheet, Long> {
 	List<Timesheet> findByStatus(String status);
 	
 	List<Timesheet> findByStatusNot(String status);
+
+	List<Timesheet> findByWeekStartAndStatusNot(LocalDate weekStart, String status);
 
 
 
