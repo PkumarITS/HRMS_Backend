@@ -67,7 +67,7 @@ public class LeaveRequestController {
 	// .orElse(ResponseEntity.notFound().build());
 	// }
 
-	@PutMapping("/{id}/status")
+	@PutMapping("/admin/leaves/{id}/status")
 	public ResponseEntity<LeaveRequest> updateStatus(
 			@PathVariable Long id,
 			@RequestParam String status) {
@@ -110,7 +110,7 @@ public class LeaveRequestController {
 				.orElse(ResponseEntity.notFound().build());
 	}
 
-	@PutMapping("/{id}")
+	@PutMapping("/admin/leaves/{id}")
 	public ResponseEntity<LeaveRequest> updateLeaveRequest(
 			@PathVariable Long id,
 			@RequestBody LeaveRequest leaveRequest) {

@@ -281,8 +281,8 @@ public class TimesheetService {
 		System.out.println("Current status: " + existing.getStatus());
  
 		// Only allow submission if in DRAFT status
-		if (!"DRAFT".equals(existing.getStatus())) {
-			throw new RuntimeException("Only DRAFT timesheets can be submitted");
+		if (!"DRAFT".equals(existing.getStatus()) && !"REJECTED".equals(existing.getStatus())) {
+			throw new RuntimeException("Only DRAFT or REJECTED timesheets can be submitted");
 		}
  
 		existing.setStatus("SUBMITTED");

@@ -75,12 +75,12 @@ public class LeaveRequestService {
     }
 
     // Save a new or updated leave request
+    // Save a new or updated leave request
     public LeaveRequest save(LeaveRequest request) {
-        if (request.getToDate().isBefore(request.getFromDate())
-                || request.getToDate().isEqual(request.getFromDate())) {
-            throw new IllegalArgumentException("To date must be after From date.");
+        if (request.getToDate().isBefore(request.getFromDate())) {
+            throw new IllegalArgumentException("To date cannot be before From date.");
         }
-
+ 
         request.setStatus(formatStatus(request.getStatus()));
         return repository.save(request);
     }
