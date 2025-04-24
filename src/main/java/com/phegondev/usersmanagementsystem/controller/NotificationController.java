@@ -38,6 +38,23 @@ public class NotificationController {
         return ResponseEntity.ok(notificationService.getUnreadNotifications(user.getEmpId()));
     }
 
+    @GetMapping("/admin/unread")
+    public ResponseEntity<List<Notification>> getUnreadNotificationsForAdmin() {
+        System.out.println("GET /admin/unread called");
+        List<Notification> unreadNotifications = notificationService.getUnreadNotificationsForAdmin();
+        System.out.println("Unread notifications retrieved: " + unreadNotifications.size());
+        return ResponseEntity.ok(unreadNotifications);
+    }
+    
+    @GetMapping("/admin/unread-count")
+    public ResponseEntity<Long> getUnreadCountForAdmin() {
+        System.out.println("GET /admin/unread-count called");
+        long count = notificationService.getUnreadCountForAdmin();
+        System.out.println("Unread notifications count: " + count);
+        return ResponseEntity.ok(count);
+    }
+    
+
     @GetMapping("/unread-count")
     public ResponseEntity<Long> getUnreadCount() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

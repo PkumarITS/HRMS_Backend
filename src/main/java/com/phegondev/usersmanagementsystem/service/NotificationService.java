@@ -39,6 +39,13 @@ public class NotificationService {
         return notificationRepo.findByRecipientIdAndIsReadFalseOrderByCreatedAtDesc(userId);
     }
 
+    public List<Notification> getUnreadNotificationsForAdmin() {
+        System.out.println("Fetching unread notifications for admin...");
+        List<Notification> result = notificationRepo.findByRecipientIdAndIsReadFalseOrderByCreatedAtDesc("admin");
+        System.out.println("Found " + result.size() + " unread notifications");
+        return result;
+    }
+
     public void markAllAsRead(String userId) {
         notificationRepo.markAllAsRead(userId);
     }
@@ -50,4 +57,12 @@ public class NotificationService {
     public long getUnreadCount(String userId) {
         return notificationRepo.countByRecipientIdAndIsReadFalse(userId);
     }
+
+   
+public long getUnreadCountForAdmin() {
+    System.out.println("Fetching unread notification count for admin...");
+    long count = notificationRepo.countByRecipientIdAndIsReadFalse("admin");
+    System.out.println("Count retrieved: " + count);
+    return count;
+}
 }
