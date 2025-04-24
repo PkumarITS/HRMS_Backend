@@ -45,6 +45,10 @@ public class EmployeeService {
         return employeeRepository.findAll();
     }
 
+    public List<String> getAllEmployeeIds() {
+        return employeeRepository.findAllEmployeeIds();
+    }
+
     // ✅ NEW METHOD ADDED HERE
     public List<Map<String, String>> searchEmployees(String query) {
         return employeeRepository.findAll().stream()

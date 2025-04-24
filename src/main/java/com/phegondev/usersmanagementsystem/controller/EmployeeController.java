@@ -113,6 +113,19 @@ public ResponseEntity<?> searchEmployees(@RequestParam String query) {
         }
     }
 
+    @GetMapping("/ids")
+    public ResponseEntity<?> getAllEmployeeIds() {
+        try {
+            List<String> employeeIds = employeeService.getAllEmployeeIds();
+            Map<String, Object> response = new HashMap<>();
+            response.put("status", "success");
+            response.put("data", employeeIds);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return errorResponse("Failed to fetch employee IDs: " + e.getMessage());
+        }
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<?> updateEmployee(@PathVariable Long id, @Valid @RequestBody Employee employeeDetails,
             BindingResult result) {
