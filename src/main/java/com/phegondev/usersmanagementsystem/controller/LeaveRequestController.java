@@ -2,9 +2,12 @@
 package com.phegondev.usersmanagementsystem.controller;
 
 import com.phegondev.usersmanagementsystem.entity.LeaveRequest;
+import com.phegondev.usersmanagementsystem.entity.LeaveType;
 import com.phegondev.usersmanagementsystem.entity.OurUsers;
 import com.phegondev.usersmanagementsystem.service.LeaveBalanceService;
 import com.phegondev.usersmanagementsystem.service.LeaveRequestService;
+import com.phegondev.usersmanagementsystem.service.LeaveTypeService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -22,12 +25,14 @@ import java.util.Optional;
 public class LeaveRequestController {
 
 	private final LeaveBalanceService leaveBalanceService;
+	 private final LeaveTypeService leaveTypeService;
 
 	@Autowired
 	private LeaveRequestService service;
 
-	LeaveRequestController(LeaveBalanceService leaveBalanceService) {
+	LeaveRequestController(LeaveBalanceService leaveBalanceService, LeaveTypeService leaveTypeService) {
 		this.leaveBalanceService = leaveBalanceService;
+		this.leaveTypeService = leaveTypeService;
 	}
 
 	// Get all leave requests
@@ -100,6 +105,12 @@ public class LeaveRequestController {
 		List<LeaveRequest> requests = service.getByEmployeeId(empId);
 		return requests.isEmpty() ? ResponseEntity.notFound().build() : ResponseEntity.ok(requests);
 	}
+	
+	   @GetMapping("/leave-types")
+	    public ResponseEntity<List<LeaveType>> getAllLeaveTypes() {
+	        return ResponseEntity.ok(leaveTypeService.getAllLeaveTypes());
+	    }
+
 
 	// Add these methods to LeaveRequestController.java
 
@@ -127,5 +138,40 @@ public class LeaveRequestController {
 		service.deleteById(id);
 		return ResponseEntity.noContent().build();
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
 }

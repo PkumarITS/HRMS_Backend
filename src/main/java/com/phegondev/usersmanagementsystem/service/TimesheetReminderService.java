@@ -79,46 +79,113 @@ public class TimesheetReminderService {
 	    
 	// Reminder 2: Sunday EOD (12 AM) - To Employee and Supervisor
 //	  @Scheduled(cron = "0 0 0 ? * SUN")
-	  @Scheduled(cron = "0 59 16 ? * THU")
+// 	  @Scheduled(cron = "0 59 16 ? * THU")
 
-	  public void sendSecondReminderToEmployeeAndSupervisor() {
-	      sendReminder("2nd Reminder - Timesheet Submission Still Pending", (ts, employee, supervisor) -> {
-	          String employeeBody = "Dear " + employee.getName() + ",\n\n" +
-	              "This is your second reminder that your timesheet (ID: " + ts.getTimesheetId() + ") has not yet been submitted.\n\n" +
-	              "Please take immediate action to complete the submission. Your supervisor has been informed as well.\n\n" +
-	              "Timely submission of timesheets is crucial for accurate tracking and processing. Please ensure that your timesheet is submitted as soon as possible to avoid further escalation.\n\n" +
-      		      "If you have already submitted it, kindly disregard this message.\n\n" +
-      		      "Thank you for your attention to this matter.\n\n" +
-	              "Regards,\nTimesheet Management Team";
+// 	  public void sendSecondReminderToEmployeeAndSupervisor() {
+// 	      sendReminder("2nd Reminder - Timesheet Submission Still Pending", (ts, employee, supervisor) -> {
+// 	          String employeeBody = "Dear " + employee.getName() + ",\n\n" +
+// 	              "This is your second reminder that your timesheet (ID: " + ts.getTimesheetId() + ") has not yet been submitted.\n\n" +
+// 	              "Please take immediate action to complete the submission. Your supervisor has been informed as well.\n\n" +
+// 	              "Timely submission of timesheets is crucial for accurate tracking and processing. Please ensure that your timesheet is submitted as soon as possible to avoid further escalation.\n\n" +
+//       		      "If you have already submitted it, kindly disregard this message.\n\n" +
+//       		      "Thank you for your attention to this matter.\n\n" +
+// 	              "Regards,\nTimesheet Management Team";
 
-	          mailService.sendEmail(employee.getEmail(), "2nd Reminder - Timesheet Submission Still Pending", employeeBody);
+// 	          mailService.sendEmail(employee.getEmail(), "2nd Reminder - Timesheet Submission Still Pending", employeeBody);
 
-	          if (supervisor != null) {
-	              String supervisorBody = "Dear " + supervisor.getName() + ",\n\n" +
-	                  employee.getName() + " has not submitted their timesheet (ID: " + ts.getTimesheetId() + ").\n\n" +
-	                  "Kindly follow up with them to ensure timely submission.\n\n" +
-	                  "Regards,\nTimesheet Management Team";
-	              mailService.sendEmail(supervisor.getEmail(), "2nd Reminder - Timesheet Submission Still Pending", supervisorBody);
-	          }
-	      });
-	  }
+// 	          if (supervisor != null) {
+// 	              String supervisorBody = "Dear " + supervisor.getName() + ",\n\n" +
+// 	                  employee.getName() + " has not submitted their timesheet (ID: " + ts.getTimesheetId() + ").\n\n" +
+// 	                  "Kindly follow up with them to ensure timely submission.\n\n" +
+// 	                  "Regards,\nTimesheet Management Team";
+// 	              mailService.sendEmail(supervisor.getEmail(), "2nd Reminder - Timesheet Submission Still Pending", supervisorBody);
+// 	          }
+// 	      });
+// 	  }
 
-	  // Reminder 3: Monday 2 PM - To Supervisor
-//	  @Scheduled(cron = "0 0 14 ? * MON")
-	  @Scheduled(cron = "0 8 17 ? * THU")
+// 	  // Reminder 3: Monday 2 PM - To Supervisor
+// //	  @Scheduled(cron = "0 0 14 ? * MON")
+// 	  @Scheduled(cron = "0 8 17 ? * THU")
 
-	  public void sendThirdReminderToSupervisor() {
-	      sendReminder("Action Required - Team Member's Timesheet Not Submitted", (ts, employee, supervisor) -> {
-	          if (supervisor != null) {
-	              String body = "Dear " + supervisor.getName() + ",\n\n" +
-	                  employee.getName() + " has not submitted their timesheet (ID: " + ts.getTimesheetId() + ").\n\n" +
-	                  "Kindly follow up with them to ensure timely submission.\n\n" +
-	                  "Regards,\nTimesheet Management Team";
-	              mailService.sendEmail(supervisor.getEmail(), "Action Required - Team Member's Timesheet Not Submitted", body);
-	          }
-	      });
-	  }
+// 	  public void sendThirdReminderToSupervisor() {
+// 	      sendReminder("Action Required - Team Member's Timesheet Not Submitted", (ts, employee, supervisor) -> {
+// 	          if (supervisor != null) {
+// 	              String body = "Dear " + supervisor.getName() + ",\n\n" +
+// 	                  employee.getName() + " has not submitted their timesheet (ID: " + ts.getTimesheetId() + ").\n\n" +
+// 	                  "Kindly follow up with them to ensure timely submission.\n\n" +
+// 	                  "Regards,\nTimesheet Management Team";
+// 	              mailService.sendEmail(supervisor.getEmail(), "Action Required - Team Member's Timesheet Not Submitted", body);
+// 	          }
+// 	      });
+// 	  }
 
+
+
+
+@Scheduled(cron = "0 24 9 ? * FRI") // Every Thursday at 4:59 PM
+public void sendSecondReminderToEmployeeAndSupervisor() {
+	try {
+		LocalDate today = LocalDate.now();
+		LocalDate currentWeekStart = today.with(DayOfWeek.MONDAY);
+
+		System.out.println("Today's date: " + today);
+		System.out.println("Current week start (Monday): " + currentWeekStart);
+
+		List<Timesheet> draftTimesheets = timesheetRepo.findByStatusAndWeekStart("DRAFT", currentWeekStart);
+		System.out.println("Total draft timesheets found: " + draftTimesheets.size());
+
+		OurUsers supervisor;
+		try {
+			supervisor = usersRepo.findByRole("supervisor");
+			if (supervisor == null) {
+				System.err.println("No supervisor found in the system.");
+				return;
+			}
+		} catch (Exception e) {
+			System.err.println("Failed to fetch supervisor details: " + e.getMessage());
+			return;
+		}
+		
+		System.out.println("Sending reminder to supervisor: " + supervisor.getName() + " (Email: " + supervisor.getEmail() + ")");
+
+		for (Timesheet ts : draftTimesheets) {
+			try {
+				OurUsers employee = usersRepo.findByEmpId(ts.getEmpId());
+				if (employee == null) {
+					System.err.println("No employee found with empId: " + ts.getEmpId());
+					continue;
+				}
+
+				System.out.println("Sending reminder to: " + employee.getName() + " (Email: " + employee.getEmail() + ")");
+
+				String employeeBody = "Dear " + employee.getName() + ",\n\n" +
+						"This is your second reminder that your timesheet (ID: " + ts.getTimesheetId() + ") has not yet been submitted.\n\n" +
+						"Please take immediate action to complete the submission. Your supervisor has been informed as well.\n\n" +
+						"Timely submission of timesheets is crucial for accurate tracking and processing. Please ensure that your timesheet is submitted as soon as possible to avoid further escalation.\n\n" +
+						"If you have already submitted it, kindly disregard this message.\n\n" +
+						"Thank you for your attention to this matter.\n\n" +
+						"Regards,\nTimesheet Management Team";
+
+				mailService.sendEmail(employee.getEmail(), "2nd Reminder - Timesheet Submission Still Pending", employeeBody);
+
+				String supervisorBody = "Dear " + supervisor.getName() + ",\n\n" +
+						employee.getName() + " has not submitted their timesheet (ID: " + ts.getTimesheetId() + ").\n\n" +
+						"Kindly follow up with them to ensure timely submission.\n\n" +
+						"Regards,\nTimesheet Management Team";
+
+				mailService.sendEmail(supervisor.getEmail(), "2nd Reminder - Timesheet Submission Still Pending", supervisorBody);
+
+			} catch (Exception e) {
+				System.err.println("Error processing timesheet ID " + ts.getTimesheetId() + ": " + e.getMessage());
+				e.printStackTrace();
+			}
+		}
+
+	} catch (Exception e) {
+		System.err.println("Exception in scheduled reminder task: " + e.getMessage());
+		e.printStackTrace();
+	}
+}
 	  // Reminder 4: Tuesday 2 PM - To Supervisor and HR
 //	  @Scheduled(cron = "0 0 14 ? * TUE")
 	  public void sendFourthReminderToSupervisorAndHR() {
