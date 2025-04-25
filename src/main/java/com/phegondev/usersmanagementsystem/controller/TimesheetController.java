@@ -19,11 +19,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.HttpStatus;
 
+import com.phegondev.usersmanagementsystem.dto.SendEmailRequestDTO;
 import com.phegondev.usersmanagementsystem.dto.TaskNameIdDTO;
 import com.phegondev.usersmanagementsystem.dto.TimesheetDTO;
 import com.phegondev.usersmanagementsystem.dto.TimesheetInitialDataDTO;
+import com.phegondev.usersmanagementsystem.dto.UserSummaryDTO;
 import com.phegondev.usersmanagementsystem.entity.OurUsers;
 import com.phegondev.usersmanagementsystem.entity.Timesheet;
+import com.phegondev.usersmanagementsystem.service.MailService;
 import com.phegondev.usersmanagementsystem.service.TimesheetService;
 
 @RestController
@@ -31,9 +34,11 @@ import com.phegondev.usersmanagementsystem.service.TimesheetService;
 public class TimesheetController {
 
 	private final TimesheetService timesheetService;
+	private final MailService mailService;
 
-	public TimesheetController(TimesheetService timesheetService) {
+	public TimesheetController(TimesheetService timesheetService, MailService mailService) {
 		this.timesheetService = timesheetService;
+		this.mailService = mailService;
 	}
 
 	@PostMapping("/user/timesheet")
@@ -249,5 +254,21 @@ public class TimesheetController {
 	                .body("Error updating status: " + e.getMessage());
 	    }
 	}
+
+	@GetMapping("/api/employees/basic-info")
+	public ResponseEntity<List<UserSummaryDTO>> getAllUserSummaries() {
+	    System.out.println("Received request to fetch all employee summaries...");
+	    List<UserSummaryDTO> summaries = timesheetService.getAllUserSummaries();
+	    System.out.println("Returning " + summaries.size() + " user summaries to UI.");
+	    return ResponseEntity.ok(summaries);
+	}
+	
+    @PostMapping("/api/emails/employee-reminders")
+    public ResponseEntity<String> sendEmails(@RequestBody SendEmailRequestDTO request) {
+        System.out.println("Received email sending request for " + request.getTo().size() + " recipients");
+        timesheetService.sendPersonalizedEmails(request);
+        return ResponseEntity.ok("Emails sent successfully.");
+    }
+ 
 
 }

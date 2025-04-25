@@ -153,6 +153,13 @@ public class OurUsers implements UserDetails {
 		return "OurUsers [id=" + id + ", email=" + email + ", name=" + name + ", password=" + password + ", city="
 				+ city + ", role=" + role + ", empId=" + empId + ", blacklistedToken=" + blacklistedToken + "]";
 	}
+
+	public String getSupervisorId() {
+		return "OurUsers [id=" + id + ", email=" + email + ", name=" + name + ", password=" + password + ", city="
+				+ city + ", role=" + role + ", empId=" + empId + ", blacklistedToken=" + blacklistedToken + "]";
+	}
+
+	
 	
 	
 	

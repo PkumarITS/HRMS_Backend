@@ -10,9 +10,11 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
  
 import com.phegondev.usersmanagementsystem.dto.ProjectNameIdDTO;
+import com.phegondev.usersmanagementsystem.dto.SendEmailRequestDTO;
 import com.phegondev.usersmanagementsystem.dto.TaskNameIdDTO;
 import com.phegondev.usersmanagementsystem.dto.TimesheetDTO;
 import com.phegondev.usersmanagementsystem.dto.TimesheetInitialDataDTO;
+import com.phegondev.usersmanagementsystem.dto.UserSummaryDTO;
 import com.phegondev.usersmanagementsystem.entity.Timesheet;
 import com.phegondev.usersmanagementsystem.repository.AssignmentRepository;
 import com.phegondev.usersmanagementsystem.repository.ProjectRepository;
@@ -20,6 +22,8 @@ import com.phegondev.usersmanagementsystem.repository.TaskRepository;
 import com.phegondev.usersmanagementsystem.repository.TimesheetRepo;
  import com.phegondev.usersmanagementsystem.repository.UsersRepo;
 import com.phegondev.usersmanagementsystem.service.NotificationService;
+
+import jakarta.mail.MessagingException;
 
 
 @Service
@@ -30,17 +34,19 @@ public class TimesheetService {
 	private final AssignmentRepository assignmentRepository;
 	private final TaskRepository taskRepository;
     private final NotificationService notificationService;
+	private final MailService mailService;
 
 	private final UsersRepo usersRepo;
  
 	public TimesheetService(TimesheetRepo timesheetRepo, ProjectRepository projectRepository,
-			AssignmentRepository assignmentRepository, TaskRepository taskRepository, UsersRepo usersRepo,NotificationService notificationService) {
+			AssignmentRepository assignmentRepository, TaskRepository taskRepository, UsersRepo usersRepo,NotificationService notificationService, MailService mailService) {
 		this.timesheetRepo = timesheetRepo;
 		this.projectRepository = projectRepository;
 		this.assignmentRepository = assignmentRepository;
 		this.taskRepository = taskRepository;
 		this.usersRepo = usersRepo;
 		this.notificationService = notificationService;
+		this.mailService = mailService;
 	}
  
 	public TimesheetDTO createTimesheet(TimesheetDTO dto) {
@@ -432,7 +438,43 @@ public void updateStatus(String timesheetId, String status) {
 
     System.out.println("[Service] Status update complete for Timesheet ID: " + timesheetId);
 }
+
+public List<UserSummaryDTO> getAllUserSummaries() {
+	    System.out.println("Fetching all users from database...");
  
+	    List<UserSummaryDTO> summaryList = usersRepo.findAll().stream()
+	            .map(user -> {
+	                System.out.println("Mapping user : " + user.getEmpId() + " - " + user.getEmail());
+	                return new UserSummaryDTO(user.getEmail(), user.getEmpId(), user.getName());
+	            })
+	            .collect(Collectors.toList());
+ 
+	    System.out.println("Total users created: " + summaryList.size());
+	    return summaryList;
+	}
+	
+	
+	 public void sendPersonalizedEmails(SendEmailRequestDTO request) {
+	        for (UserSummaryDTO recipient : request.getTo()) {
+	            String personalizedBody = "Dear " + recipient.getName() + ",\n\n" + request.getMessageBody();
+ 
+	            try {
+	            	mailService.sendEmail(
+	                    recipient.getEmail(),
+	                    request.getCc(),
+	                    "Timesheet Reminder",
+	                    personalizedBody
+	                );
+	                System.out.println("✅ Email sent to: " + recipient.getEmail());
+ 
+	            } catch (MessagingException e) {
+	                System.err.println("❌ Failed to send email to: " + recipient.getEmail());
+	                e.printStackTrace();
+	            }
+	        }
+ 
+	        System.out.println("📨 All email requests processed.");
+	    }
  
  
  

@@ -16,20 +16,14 @@ public interface TimesheetRepo extends JpaRepository<Timesheet, Long> {
 	Timesheet findLatestTimesheet();
 
 	boolean existsByTimesheetIdAndTaskId(String timesheetId, Long taskId);
-
 	Optional<Timesheet> findByTimesheetId(String timesheetId);
-
 	List<Timesheet> findByEmpId(String empId);
-
 	List<Timesheet> findByEmpIdAndCreatedAtBetween(String empId, LocalDateTime start, LocalDateTime end);
-
 	List<Timesheet> findByEmpIdAndStatus(String empId, String status);
-	
 	List<Timesheet> findByStatus(String status);
-	
 	List<Timesheet> findByStatusNot(String status);
-
 	List<Timesheet> findByWeekStartAndStatusNot(LocalDate weekStart, String status);
+	List<Timesheet> findByStatusAndWeekStart(String status, LocalDate weekStart);
 
 
 
