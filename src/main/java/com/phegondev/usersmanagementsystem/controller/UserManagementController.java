@@ -62,7 +62,7 @@ public class UserManagementController {
     }
 
     // Get the profile
-    @GetMapping("/adminuser/get-profile")
+    @GetMapping("/common/get-profile")
     @PreAuthorize("hasAnyAuthority('admin', 'user')")
     public ResponseEntity<ReqRes> getMyProfile() {
 
@@ -82,7 +82,7 @@ public class UserManagementController {
     }
 
     
-    @GetMapping("/adminuser/get-complete-profile")
+    @GetMapping("/common/get-complete-profile")
     @PreAuthorize("hasAnyAuthority('admin', 'user')")
     public ResponseEntity<ReqRes> getCompleteProfile() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
