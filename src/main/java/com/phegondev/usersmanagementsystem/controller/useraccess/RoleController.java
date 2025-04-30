@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,6 +25,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/roles")
+@CrossOrigin(origins = "http://localhost:5173")
 public class RoleController {
 
     private final RoleService roleService;
@@ -54,7 +56,7 @@ public class RoleController {
     }
 
 
- //   @GetMapping("/{roleId}")
+   @GetMapping("/{roleId}")
     public ResponseEntity<RoleDTO> getRoleById(@PathVariable Long roleId) {
         RoleDTO role = roleService.getRoleById(roleId);
         return ResponseEntity.ok(role);
@@ -87,7 +89,7 @@ public class RoleController {
     
     
 
- //   @GetMapping("/getActions/{roleId}")
+    @GetMapping("/getActions/{roleId}")
     public ResponseEntity<?> getActionsByRole(@PathVariable Long roleId) {      
             List<ActionIdNameDTO> actionIdNames = roleService.getActionsByRole(roleId);
             return ResponseEntity.ok(actionIdNames);
