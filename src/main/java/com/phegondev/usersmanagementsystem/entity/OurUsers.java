@@ -6,6 +6,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.phegondev.usersmanagementsystem.entity.useraccess.UserActionMapping;
+
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -36,6 +39,9 @@ public class OurUsers implements UserDetails {
     @JoinColumn(name = "employee_id", referencedColumnName = "id") 
     // private personal personal;
     private Employee employee;
+    
+	@OneToMany(mappedBy="user" , cascade = CascadeType.ALL)
+	private List<UserActionMapping> actionList = new ArrayList<>();
 
     public String getEmployeeId() {
         // String e_id=this.personal.getEmpId();
@@ -45,8 +51,31 @@ public class OurUsers implements UserDetails {
         }
         return this.empId;
     }
+    
+    
+    
+    
+    
 
-    @Override
+    public List<UserActionMapping> getActionList() {
+		return actionList;
+	}
+
+
+
+
+
+
+	public void setActionList(List<UserActionMapping> actionList) {
+		this.actionList = actionList;
+	}
+
+
+
+
+
+
+	@Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(this.role));
     }
