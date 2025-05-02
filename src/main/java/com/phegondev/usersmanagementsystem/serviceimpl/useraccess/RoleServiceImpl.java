@@ -141,14 +141,6 @@ public class RoleServiceImpl implements RoleService {
 	            System.out.println("No associated actions for Role ID: " + id);
 	        }
 
-	        
-	        List<String> associatedCategories = roleRepository.findCategoryNamesByRoleId(id);
-	        if (!associatedCategories.isEmpty()) {
-	            System.out.println("Associated Categories for Role ID " + id + ": " + associatedCategories);
-	        } else {
-	            System.out.println("No associated categories for Role ID: " + id);
-	        }
-
 	      
 	        List<String> associatedUsers = userActionMappingRepository.findUsernamesByRoleId(id);
 	        if (!associatedUsers.isEmpty()) {
@@ -158,15 +150,14 @@ public class RoleServiceImpl implements RoleService {
 	        }
 
 	     
-	        if (!associatedActions.isEmpty() || !associatedCategories.isEmpty() || !associatedUsers.isEmpty()) {
+	        if (!associatedActions.isEmpty() ||   !associatedUsers.isEmpty()) {
 	            String message = "Please remove mappings before deleting Role as it is associated with ";
-	            if (!associatedActions.isEmpty()) message += "actions, ";
-	            if (!associatedCategories.isEmpty()) message += "categories, ";
+	            if (!associatedActions.isEmpty()) message += "actions, ";	 
 	            if (!associatedUsers.isEmpty()) message += "users, ";
 	            message = message.substring(0, message.length() - 2) + ".";
 
 	            System.out.println("Deletion blocked for Role ID " + id + ". " + message);
-	            throw new RoleDeletionException(message, associatedActions, associatedCategories, associatedUsers);
+	            throw new RoleDeletionException(message, associatedActions, associatedUsers);
 	        }
 
 	        System.out.println("Deleting Role with ID: " + id);

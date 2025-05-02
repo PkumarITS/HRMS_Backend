@@ -17,12 +17,7 @@ public interface RoleRepo extends JpaRepository<Role, Long>{
 	 List<Role> findRolesByActionId(@Param("actionId") Long actionId);
 	 
 	    @Query(value = "SELECT action_name FROM action a JOIN role_action_mapping ram ON a.action_id = ram.action_id WHERE ram.role_id = :roleId", nativeQuery = true)
-	    List<String> findActioNamesByRoleId(@Param("roleId") Long roleId);
-	    
-	    @Query(value = "SELECT c.category_name FROM category c " +
-	               "JOIN category_role_mapping crm ON c.category_id = crm.category_id " +
-	               "WHERE crm.role_id = :roleId", nativeQuery = true)
-	List<String> findCategoryNamesByRoleId(@Param("roleId") Long roleId);
+	    List<String> findActioNamesByRoleId(@Param("roleId") Long roleId);	   
 	    
 	  Role findByRoleName(String name);
 
