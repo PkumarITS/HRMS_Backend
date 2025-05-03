@@ -9,7 +9,6 @@ public class ActionDTO {
 	  @NotBlank(message = "Action name is required")
 	  private String actionName;
 	  
-	  @NotBlank(message = "Alias name is required")
 	  private String alias;
 	   
 	  @NotBlank(message = "Description is required")
