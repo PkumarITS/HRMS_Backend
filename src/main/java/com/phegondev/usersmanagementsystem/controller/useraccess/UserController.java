@@ -14,25 +14,29 @@ import org.springframework.web.bind.annotation.RestController;
 import com.phegondev.usersmanagementsystem.dto.useraccess.MapUserRequestDto;
 import com.phegondev.usersmanagementsystem.dto.useraccess.UserActionDTO;
 import com.phegondev.usersmanagementsystem.service.UsersManagementService;
+import com.phegondev.usersmanagementsystem.service.useraccess.UserService;
 
 
 @RestController
 @RequestMapping("/users")
 public class UserController {
 	
-    @Autowired
-    private UsersManagementService usersManagementService;
+	  private final UserService usersService;
+
+	    public UserController(UserService usersService) {
+	        this.usersService = usersService;
+	    }
 	
     @PostMapping("/mapActionsToUser")
     public ResponseEntity<?> mapActionsToUser(@RequestBody MapUserRequestDto request) {
-    	usersManagementService.mapActionsToUser(request);	        
+    	usersService.mapActionsToUser(request);	        
        return ResponseEntity.ok("Mapping updated successfully");
       
     }
     
     @GetMapping("{id}/actions")
-    public ResponseEntity<List<UserActionDTO>> getUserActions(@PathVariable Long id ) {	               
-       return ResponseEntity.ok(usersManagementService.getUserActions(id));
+    public ResponseEntity<List<UserActionDTO>> getUserActions(@PathVariable Integer id ) {	               
+       return ResponseEntity.ok(usersService.getUserActions(id));
       
     }
 
