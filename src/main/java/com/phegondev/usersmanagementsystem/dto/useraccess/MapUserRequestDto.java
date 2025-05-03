@@ -4,26 +4,27 @@ import java.util.List;
 
 public class MapUserRequestDto {
 	
-	 private Long userId;
-	 private List<String> categoryRoleActionIds;
+	 private Integer userId;
+	 private List<String> roleActionIds;
 	 
-	public Long getUserId() {
+	public Integer getUserId() {
 		return userId;
 	}
-	public void setUserId(Long userId) {
+	public void setUserId(Integer userId) {
 		this.userId = userId;
 	}
-	public List<String> getCategoryRoleActionIds() {
-		return categoryRoleActionIds;
+	public List<String> getRoleActionIds() {
+		return roleActionIds;
 	}
-	public void setCategoryRoleActionIds(List<String> categoryRoleActionIds) {
-		this.categoryRoleActionIds = categoryRoleActionIds;
+	public void setRoleActionIds(List<String> roleActionIds) {
+		this.roleActionIds = roleActionIds;
 	}
-	
 	@Override
 	public String toString() {
-		return "MapUserRequestDto [userId=" + userId + ", categoryRoleActionIds=" + categoryRoleActionIds + "]";
+		return "MapUserRequestDto [userId=" + userId + ", roleActionIds=" + roleActionIds + "]";
 	}
+
+	
 	 
 	 
 

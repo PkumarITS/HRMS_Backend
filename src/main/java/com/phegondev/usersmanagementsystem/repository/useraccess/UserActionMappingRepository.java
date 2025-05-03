@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.phegondev.usersmanagementsystem.entity.OurUsers;
 import com.phegondev.usersmanagementsystem.entity.useraccess.UserActionMapping;
 
 
@@ -17,11 +18,11 @@ public interface UserActionMappingRepository extends JpaRepository<UserActionMap
     @Query("SELECT DISTINCT a.actionName FROM UserActionMapping uam " +
            "JOIN uam.action a " +
            "WHERE uam.user.id = :userId")
-    List<String> findActionNamesByUserId(@Param("userId") Long userId);
+    List<String> findActionNamesByUserId(@Param("userId") Integer userId);
     
-   // @Modifying
-  //  @Query("DELETE FROM UserActionMapping uam WHERE uam.user = :user")
- //   void deleteByUser(@Param("user") User user);
+    @Modifying
+    @Query("DELETE FROM UserActionMapping uam WHERE uam.user = :user")
+    void deleteByUser(@Param("user") OurUsers user);
     
     @Query("SELECT u FROM UserActionMapping u WHERE u.action.id = :actionId")
     List<UserActionMapping> findByActionId(@Param("actionId") Long actionId);
