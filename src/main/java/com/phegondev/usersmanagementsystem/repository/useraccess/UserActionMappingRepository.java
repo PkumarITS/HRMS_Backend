@@ -20,6 +20,12 @@ public interface UserActionMappingRepository extends JpaRepository<UserActionMap
            "WHERE uam.user.id = :userId")
     List<String> findActionNamesByUserId(@Param("userId") Integer userId);
     
+    @Query("SELECT DISTINCT a.alias FROM UserActionMapping uam " +
+    	       "JOIN uam.action a " +
+    	       "WHERE uam.user.id = :userId")
+    	List<String> findActionAliasesByUserId(@Param("userId") Integer userId);
+
+    
     @Modifying
     @Query("DELETE FROM UserActionMapping uam WHERE uam.user = :user")
     void deleteByUser(@Param("user") OurUsers user);

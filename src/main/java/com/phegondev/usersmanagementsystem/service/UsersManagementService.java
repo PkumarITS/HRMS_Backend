@@ -207,7 +207,7 @@ public class UsersManagementService {
             var user = usersRepo.findByEmail(loginRequest.getEmail()).orElseThrow();
             System.out.println("User found: " + user.getUsername() + " (Employee ID : " + user.getEmpId() + ")");
 
-            List<String> actionList = userActionMappingRepo.findActionNamesByUserId(user.getId());
+            List<String> actionList = userActionMappingRepo.findActionAliasesByUserId(user.getId());
             System.out.println("Actions fetched for user: " + actionList);
             
             var jwt = jwtUtils.generateToken(user, actionList);
@@ -244,7 +244,7 @@ public class UsersManagementService {
             OurUsers users = usersRepo.findByEmail(ourEmail).orElseThrow();
             if (jwtUtils.isTokenValid(refreshTokenRequest.getToken(), users)) {
             	
-                List<String> actionList = userActionMappingRepo.findActionNamesByUserId(users.getId());
+                List<String> actionList = userActionMappingRepo.findActionAliasesByUserId(users.getId());
                 System.out.println("Actions fetched for user: " + actionList);
                 var jwt = jwtUtils.generateToken(users, actionList);
                 
