@@ -28,6 +28,16 @@ public class ReqRes {
     private OurUsers ourUsers;
     private List<OurUsers> ourUsersList;
     private Map<String, Object> employeeData;
+    private List<String> actions;
+
+    
+    
+	public List<String> getActions() {
+		return actions;
+	}
+	public void setActions(List<String> actions) {
+		this.actions = actions;
+	}
 	public int getStatusCode() {
 		return statusCode;
 	}
@@ -117,6 +127,13 @@ public class ReqRes {
 	}
 	public void setEmployeeData(Map<String, Object> employeeData) {
 		this.employeeData = employeeData;
+	}
+	@Override
+	public String toString() {
+		return "ReqRes [statusCode=" + statusCode + ", error=" + error + ", message=" + message + ", token=" + token
+				+ ", refreshToken=" + refreshToken + ", expirationTime=" + expirationTime + ", name=" + name + ", city="
+				+ city + ", role=" + role + ", email=" + email + ", empId=" + empId + ", password=" + password
+				+ ", actions=" + actions + "]";
 	}
     
     

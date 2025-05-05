@@ -4,6 +4,8 @@ import com.phegondev.usersmanagementsystem.dto.ReqRes;
 import com.phegondev.usersmanagementsystem.entity.Employee;
 import com.phegondev.usersmanagementsystem.entity.OurUsers;
 import com.phegondev.usersmanagementsystem.repository.UsersRepo;
+import com.phegondev.usersmanagementsystem.repository.useraccess.UserActionMappingRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -16,21 +18,31 @@ import java.util.*;
 
 @Service
 public class UsersManagementService {
+	
+	    private final UsersRepo usersRepo;
+	    private final JWTUtils jwtUtils;
+	    private final AuthenticationManager authenticationManager;
+	    private final PasswordEncoder passwordEncoder;
+	    private final EmployeeService employeeService;
+	    private final UserActionMappingRepository userActionMappingRepo;
 
-    @Autowired
-    private UsersRepo usersRepo;
-
-    @Autowired
-    private JWTUtils jwtUtils;
-
-    @Autowired
-    private AuthenticationManager authenticationManager;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private EmployeeService employeeService;
+	    @Autowired
+	    public UsersManagementService(
+	            UsersRepo usersRepo,
+	            JWTUtils jwtUtils,
+	            AuthenticationManager authenticationManager,
+	            PasswordEncoder passwordEncoder,
+	            EmployeeService employeeService,
+	            UserActionMappingRepository userActionMappingRepo) {
+	        this.usersRepo = usersRepo;
+	        this.jwtUtils = jwtUtils;
+	        this.authenticationManager = authenticationManager;
+	        this.passwordEncoder = passwordEncoder;
+	        this.employeeService = employeeService;
+	        this.userActionMappingRepo = userActionMappingRepo;
+	    }
+    
+    
 
     // User Registration
     public ReqRes register(ReqRes registrationRequest) {
@@ -181,19 +193,31 @@ public class UsersManagementService {
         ReqRes response = new ReqRes();
 
         try {
-            // This line authenticates the user’s email and password
-        	Authentication auth = authenticationManager.authenticate(
-        		    new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword())
-        		);
+            System.out.println("Authenticating user with email: " + loginRequest.getEmail());
 
-        		// ✅ Set authenticated user into the security context
-        		SecurityContextHolder.getContext().setAuthentication(auth);
+            Authentication auth = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword())
+            );
 
+            System.out.println("Authentication successful");
+
+            // Set authenticated user into the security context
+            SecurityContextHolder.getContext().setAuthentication(auth);
 
             var user = usersRepo.findByEmail(loginRequest.getEmail()).orElseThrow();
-            var jwt = jwtUtils.generateToken(user);
+            System.out.println("User found: " + user.getUsername() + " (Employee ID : " + user.getEmpId() + ")");
+
+            List<String> actionList = userActionMappingRepo.findActionNamesByUserId(user.getId());
+            System.out.println("Actions fetched for user: " + actionList);
+            
+            var jwt = jwtUtils.generateToken(user, actionList);
             var refreshToken = jwtUtils.generateRefreshToken(new HashMap<>(), user);
 
+            System.out.println("JWT generated: " + jwt);
+            System.out.println("Refresh token generated: " + refreshToken);
+
+
+            response.setActions(actionList);
             response.setStatusCode(200);
             response.setToken(jwt);
             response.setRole(user.getRole());
@@ -202,11 +226,14 @@ public class UsersManagementService {
             response.setMessage("Successfully logged in");
 
         } catch (Exception e) {
+            System.out.println("Login failed: " + e.getMessage());
             response.setStatusCode(500);
             response.setMessage(e.getMessage());
         }
+
         return response;
     }
+
 
     // Generate refresh token
     public ReqRes refreshToken(ReqRes refreshTokenRequest) {
@@ -216,7 +243,14 @@ public class UsersManagementService {
             String ourEmail = jwtUtils.extractUsername(refreshTokenRequest.getToken());
             OurUsers users = usersRepo.findByEmail(ourEmail).orElseThrow();
             if (jwtUtils.isTokenValid(refreshTokenRequest.getToken(), users)) {
-                var jwt = jwtUtils.generateToken(users);
+            	
+                List<String> actionList = userActionMappingRepo.findActionNamesByUserId(users.getId());
+                System.out.println("Actions fetched for user: " + actionList);
+                var jwt = jwtUtils.generateToken(users, actionList);
+                
+          
+
+                response.setActions(actionList);
 
                 response.setStatusCode(200);
                 response.setToken(jwt);

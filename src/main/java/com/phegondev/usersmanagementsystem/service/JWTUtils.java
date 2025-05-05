@@ -7,12 +7,15 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import com.phegondev.usersmanagementsystem.entity.OurUsers;
+
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.function.Function;
 import java.util.Objects;
 
@@ -33,8 +36,10 @@ public class JWTUtils {
         this.Key = new SecretKeySpec(keyBytes, "HmacSHA256");
     }
 
-    public String generateToken(UserDetails userDetails){
+    public String generateToken(UserDetails userDetails,  List<String> actionList){
         // Extract role from UserDetails (assuming your OurUsers implements UserDetails)
+    	
+    	   OurUsers user = (OurUsers) userDetails;
     String role = userDetails.getAuthorities().stream()
             .findFirst()
             .map(GrantedAuthority::getAuthority)
@@ -42,7 +47,8 @@ public class JWTUtils {
             .orElse("user"); // Default to "USER" if no role is found
         return Jwts.builder()
                 .subject(userDetails.getUsername()) // Identifies the user
-                .claim("role", role) // Add role claim
+                .claim("role", user.getRole()) // Add role claim
+                .claim("actions", actionList)  
                 .issuedAt(new Date(System.currentTimeMillis())) // Token creation time
                 .expiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME)) // Expiration time
                 .signWith(Key) // Signs with the secret key
