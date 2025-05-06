@@ -29,9 +29,18 @@ public class ReqRes {
     private List<OurUsers> ourUsersList;
     private Map<String, Object> employeeData;
     private List<String> actions;
+    private List<UserDTO> userDTOList;
+    
+    
 
     
     
+	public List<UserDTO> getUserDTOList() {
+		return userDTOList;
+	}
+	public void setUserDTOList(List<UserDTO> userDTOList) {
+		this.userDTOList = userDTOList;
+	}
 	public List<String> getActions() {
 		return actions;
 	}

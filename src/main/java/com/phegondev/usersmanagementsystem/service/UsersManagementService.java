@@ -1,6 +1,7 @@
 package com.phegondev.usersmanagementsystem.service;
 
 import com.phegondev.usersmanagementsystem.dto.ReqRes;
+import com.phegondev.usersmanagementsystem.dto.UserDTO;
 import com.phegondev.usersmanagementsystem.entity.Employee;
 import com.phegondev.usersmanagementsystem.entity.OurUsers;
 import com.phegondev.usersmanagementsystem.repository.UsersRepo;
@@ -15,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class UsersManagementService {
@@ -274,9 +276,21 @@ public class UsersManagementService {
 
         try {
             List<OurUsers> result = usersRepo.findAll();
+            
+
+    List<UserDTO> dtoList = result.stream()
+    .map(user -> new UserDTO(
+        user.getEmail(),
+        user.getName(),
+        user.getCity(),
+        user.getRole(),
+        user.getEmpId()
+    ))
+    .collect(Collectors.toList());
 
             if (!result.isEmpty()) {
-                reqRes.setOurUsersList(result);
+              //  reqRes.setOurUsersList(result);
+            	reqRes.setUserDTOList(dtoList);
                 reqRes.setStatusCode(200);
                 reqRes.setMessage("Successful");
             } else {
