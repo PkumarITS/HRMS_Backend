@@ -3,7 +3,8 @@ package com.phegondev.usersmanagementsystem.dto;
 
 
 public class UserDTO {
-	    
+	  
+	private Integer userId;
     private String email;    
     private String name;
     private String city;
@@ -40,9 +41,20 @@ public class UserDTO {
 	public void setEmpId(String empId) {
 		this.empId = empId;
 	}
+
+
+	public Integer getUserId() {
+		return this.userId;
+	}
+
+	public void setUserId(Integer userId) {
+		this.userId = userId;
+	}
+
 	
-    public UserDTO(String email, String name, String city, String role, String empId) {
-        this.email = email;
+    public UserDTO(Integer userId, String email, String name, String city, String role, String empId) {
+        this.userId = userId;
+		this.email = email;
         this.name = name;
         this.city = city;
         this.role = role;

@@ -280,6 +280,7 @@ public class UsersManagementService {
 
     List<UserDTO> dtoList = result.stream()
     .map(user -> new UserDTO(
+        user.getId(),
         user.getEmail(),
         user.getName(),
         user.getCity(),
