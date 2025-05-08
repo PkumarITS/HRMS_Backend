@@ -168,18 +168,41 @@ public class RoleServiceImpl implements RoleService {
 
 
 	@Override
-	public Role createRoleIfNotExist(String name) {
-		
-		if(roleRepository.existsByRoleName(name)) {
-			return roleRepository.findByRoleName(name);
-		}
-		  Role newRole = new Role();
-          newRole.setRoleName(name);
-          newRole.setDescription("Administrator role with all privileges");
-          roleRepository.save(newRole);
-          System.out.println("Default role created.");
-          return newRole;
+	public void createRoleIfNotExist() {
+	    
+	    if (!roleRepository.existsByRoleName("ADMIN")) {
+	        Role adminRole = new Role();
+	        adminRole.setRoleName("ADMIN");
+	        adminRole.setDescription("Administrator role with all privileges");
+	        roleRepository.save(adminRole);
+	        System.out.println("ADMIN role created.");
+	    }
+
+	    if (!roleRepository.existsByRoleName("HR")) {
+	        Role hrRole = new Role();
+	        hrRole.setRoleName("HR");
+	        hrRole.setDescription("Human Resources role");
+	        roleRepository.save(hrRole);
+	        System.out.println("HR role created.");
+	    }
+
+	    if (!roleRepository.existsByRoleName("USER")) {
+	        Role userRole = new Role();
+	        userRole.setRoleName("USER");
+	        userRole.setDescription("Standard user role");
+	        roleRepository.save(userRole);
+	        System.out.println("USER role created.");
+	    }
+
+	    if (!roleRepository.existsByRoleName("SUPERVISOR")) {
+	        Role supervisorRole = new Role();
+	        supervisorRole.setRoleName("SUPERVISOR");
+	        supervisorRole.setDescription("Supervisor role");
+	        roleRepository.save(supervisorRole);
+	        System.out.println("SUPERVISOR role created.");
+	    }
 	}
+
 		
 		
 	

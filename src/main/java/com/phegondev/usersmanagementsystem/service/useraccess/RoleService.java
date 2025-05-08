@@ -15,6 +15,6 @@ public interface RoleService {
 	  public boolean mapActionToRole(Long roleId, List<Long> actionList);
 	  public List<ActionIdNameDTO> getActionsByRole(Long roleId);
 	  public void deleteRoleById(Long id);
-	  Role createRoleIfNotExist(String name);
+	  void createRoleIfNotExist();
 
 }

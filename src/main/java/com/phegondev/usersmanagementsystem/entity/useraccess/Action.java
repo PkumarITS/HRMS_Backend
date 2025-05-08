@@ -100,6 +100,20 @@ public class Action {
 	public void setUserList(List<UserActionMapping> userList) {
 		this.userList = userList;
 	}
+
+
+	public Action() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+
+	public Action(String actionName, String alias, String description) {
+		super();
+		this.actionName = actionName;
+		this.alias = alias;
+		this.description = description;
+	}
 	
 	
 	

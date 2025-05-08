@@ -10,5 +10,6 @@ public interface UserService {
 	
 	 List<UserActionDTO> getUserActions(Integer id);
 	 boolean mapActionsToUser(MapUserRequestDto request);
+	 void setupAdminUser();
 
 }

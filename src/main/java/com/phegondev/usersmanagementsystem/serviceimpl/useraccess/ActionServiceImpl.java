@@ -1,5 +1,6 @@
 package com.phegondev.usersmanagementsystem.serviceimpl.useraccess;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -142,20 +143,99 @@ public class ActionServiceImpl implements ActionService {
         System.out.println("Action deleted successfully for ID: " + id);
     }
 
+    @Override
+    public void createActionIfNotExist() {
+
+        List<Action> predefinedActions = List.of(
+                new Action("Add Employee", "ADD_EMPLOYEE", "Add a new employee"),
+                new Action("update employee", "UPDATE_EMPLOYEE", "updating employee"),
+                new Action("delete employee", "DELETE_EMPLOYEE", "deleting employee"),
+                new Action("fetch employee", "FETCH_EMPLOYEE", "fetching all employee data"),
+                new Action("create projects", "CREATE_PROJECTS", "creating a projects"),
+                new Action("View Timesheet", "VIEW_TIMESHEET", "hr executive have an access to view timesheet"),
+                new Action("Create Leave management", "CREATE_LEAVE_MANAGEMENT", "leave management creation"),
+                new Action("VIEW LIST ROLES", "VIEW_LIST_ROLES", "fyhj"),
+                new Action("Create Actions", "CREATE_ACTIONS", "actions creation"),
+                new Action("View List Actions", "VIEW_LIST_ACTIONS", "view list of actions"),
+                new Action("View User Management", "VIEW_USER_MANAGEMENT", "view users and user mapping to particular role"),
+                new Action("View Admin Dashboard", "VIEW_ADMIN_DASHBOARD", "view dashboard"),
+                new Action("Manage Employee", "MANAGE_EMPLOYEE", "Employee management"),
+                new Action("Manage Project", "MANAGE_PROJECT", "project management (View project dashboard)"),
+                new Action("Manage Task", "MANAGE_TASK", "Admin has an access to manage all the task"),
+                new Action("Manage Timesheet", "MANAGE_TIMESHEET", "Timesheet management"),
+                new Action("Manage Leave", "MANAGE_LEAVE", "Leave management"),
+                new Action("Manage Leave Types", "MANAGE_LEAVE_TYPES", "Admin has an access to manage Types of leave"),
+                new Action("Manage Leave Balance", "MANAGE_LEAVE_BALANCE", "manage leave balance"),
+                new Action("Manage Holiday", "MANAGE_HOLIDAY", "holiday management"),
+                new Action("Manage Attendance", "MANAGE_ATTENDANCE", "Attendance management"),
+                new Action("View Profile", "VIEW_PROFILE", "profile view"),
+                new Action("Create Role", "CREATE_ROLE", "role creation"),
+                new Action("View User Dashboard", "VIEW_USER_DASHBOARD", "user dashboard"),
+                new Action("View Project", "VIEW_PROJECT", "user can see their project"),
+                new Action("View Task", "VIEW_TASK", "user can see their assign task"),
+                new Action("View Attendance", "VIEW_ATTENDANCE", "user can see attendance"),
+                new Action("View Leave", "VIEW_LEAVE", "user can see leave management"),
+                new Action("View Leave balance", "VIEW_LEAVE_BALANCE", "user can check their leave balance"),
+                new Action("View Holiday", "VIEW_HOLIDAY", "user can see their holiday")
+            );
+        
+        for (Action action : predefinedActions) {
+            if (!actionRepository.existsByAlias(action.getAlias())){
+                actionRepository.save(action);
+                System.out.println("Created action: " + action.getActionName());
+            }
+        }
+    }
+
 	@Override
-	public Action createActionIfNotExist(String name) {
+	public void mapDefaultActionsToRoles() {
+
+
+		   Role adminRole = roleRepository.findByRoleName("ADMIN");		           
+		   Role hrRole = roleRepository.findByRoleName("HR");		          
+		   Role userRole = roleRepository.findByRoleName("USER");
+		   Role supervisorRole = roleRepository.findByRoleName("SUPERVISOR");
+		          
+
+		    // 2. Fetch all actions
+		    List<Action> allActions = actionRepository.findAll();
+
+		    // 3. Map all actions to ADMIN		  
+		     adminRole.setActionList(allActions);
+
+		    // 4. Map specific actions to HR
+		     List<String> hrAliases = List.of("VIEW_TIMESHEET", "MANAGE_EMPLOYEE", "MANAGE_LEAVE");
+
+		     List<Action> hrActions = allActions.stream()
+		         .filter(action -> hrAliases.contains(action.getAlias()))
+		         .collect(Collectors.toList());
+		     
+		     hrRole.setActionList(hrActions);
+		     
+		     // 4. Map specific actions to SUPERVISOR
+		     List<String> supervisorAliases = List.of("VIEW_PROFILE", "VIEW_TASK", "MANAGE_TIMESHEET", "VIEW_LEAVE");
+		     List<Action> supervisorActions = allActions.stream()
+		         .filter(action -> supervisorAliases.contains(action.getAlias()))
+		         .collect(Collectors.toList());
+		     supervisorRole.setActionList(supervisorActions);
+
+		    // 5. Map specific actions to USERS
+		    List<String> userAliases = List.of("VIEW_PROFILE", "VIEW_TASK", "VIEW_LEAVE", "VIEW_ATTENDENCE");	
+		    List<Action> userActions = allActions.stream()
+			         .filter(action -> userAliases.contains(action.getAlias()))
+			         .collect(Collectors.toList());
+		    userRole.setActionList(userActions);
+
+		    // 6. Save changes
+		    roleRepository.save(adminRole);
+		    roleRepository.save(hrRole);
+		    roleRepository.save(supervisorRole);
+		    roleRepository.save(userRole);
+
+		    System.out.println("Actions mapped to roles successfully.");
 		
-		if(actionRepository.existsByActionName(name)) {
-			return actionRepository.findByActionName(name);
-		}
-		  Action newAction = new Action();
-          newAction.setActionName(name);
-          newAction.setAlias("ADMIN");
-          newAction.setDescription("Action for admin tasks");
-          actionRepository.save(newAction);
-          System.out.println("Default action created.");
-          return newAction;	
 	}
+
 	
 	
 }

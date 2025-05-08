@@ -14,6 +14,7 @@ public interface ActionService {
 	  ActionDTO getActionById(Long actionId);
 	  ActionDTO updateAction(Long actionId, ActionDTO actionDTO);
 	  public void deleteActionById(Long id);
-	  Action createActionIfNotExist(String name);
+	  void createActionIfNotExist();
+	  void mapDefaultActionsToRoles();
 
 }
