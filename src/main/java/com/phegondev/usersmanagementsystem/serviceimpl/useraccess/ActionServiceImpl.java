@@ -202,9 +202,16 @@ public class ActionServiceImpl implements ActionService {
 
 		    // 3. Map all actions to ADMIN		  
 		     adminRole.setActionList(allActions);
+             
 
 		    // 4. Map specific actions to HR
-		     List<String> hrAliases = List.of("VIEW_TIMESHEET", "MANAGE_EMPLOYEE", "MANAGE_LEAVE");
+                            List<String> hrAliases = List.of("MANAGE_EMPLOYEE",
+                                    "MANAGE_LEAVE",
+                                    "MANAGE_LEAVE_TYPES",
+                                    "MANAGE_LEAVE_BALANCE",
+                                    "MANAGE_HOLIDAY",
+                                    "MANAGE_ATTENDANCE",
+                                    "VIEW_PROFILE");
 
 		     List<Action> hrActions = allActions.stream()
 		         .filter(action -> hrAliases.contains(action.getAlias()))
@@ -213,14 +220,30 @@ public class ActionServiceImpl implements ActionService {
 		     hrRole.setActionList(hrActions);
 		     
 		     // 4. Map specific actions to SUPERVISOR
-		     List<String> supervisorAliases = List.of("VIEW_PROFILE", "VIEW_TASK", "MANAGE_TIMESHEET", "VIEW_LEAVE");
+		     List<String> supervisorAliases = List.of("MANAGE_PROJECT",
+                     "MANAGE_TASK",
+                     "MANAGE_TIMESHEET",
+                     "MANAGE_LEAVE",
+                     "MANAGE_LEAVE_TYPES",
+                     "MANAGE_LEAVE_BALANCE",
+                     "MANAGE_ATTENDANCE",
+                     "VIEW_PROFILE",
+                     "VIEW_HOLIDAY");
 		     List<Action> supervisorActions = allActions.stream()
 		         .filter(action -> supervisorAliases.contains(action.getAlias()))
 		         .collect(Collectors.toList());
 		     supervisorRole.setActionList(supervisorActions);
 
 		    // 5. Map specific actions to USERS
-		    List<String> userAliases = List.of("VIEW_PROFILE", "VIEW_TASK", "VIEW_LEAVE", "VIEW_ATTENDENCE");	
+		    List<String> userAliases = List.of("VIEW_TIMESHEET",
+                    "VIEW_PROFILE",
+                    "VIEW_USER_DASHBOARD",
+                    "VIEW_PROJECT",
+                    "VIEW_TASK",
+                    "VIEW_ATTENDENCE",
+                    "VIEW_LEAVE",
+                    "VIEW_LEAVE_BALANCE",
+                    "VIEW_HOLIDAY");	
 		    List<Action> userActions = allActions.stream()
 			         .filter(action -> userAliases.contains(action.getAlias()))
 			         .collect(Collectors.toList());
