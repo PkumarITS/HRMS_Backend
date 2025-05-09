@@ -169,7 +169,8 @@ public class RoleServiceImpl implements RoleService {
 
 	@Override
 	public void createRoleIfNotExist() {
-	    
+	    System.out.println("Checking and creating roles...");
+
 	    if (!roleRepository.existsByRoleName("ADMIN")) {
 	        Role adminRole = new Role();
 	        adminRole.setRoleName("ADMIN");

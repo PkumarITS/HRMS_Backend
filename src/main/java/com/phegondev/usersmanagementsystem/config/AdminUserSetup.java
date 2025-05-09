@@ -25,7 +25,9 @@ public class AdminUserSetup  implements CommandLineRunner
 
     @Override
     public void run(String... args) throws Exception {
-    	//userService.setupAdminUser();
+        System.out.println("Starting admin setup...");
+        userService.setupAdminUser();
+        System.out.println("Admin setup completed.");
     }
 
 }

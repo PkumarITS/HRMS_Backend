@@ -3,6 +3,7 @@ package com.phegondev.usersmanagementsystem.service.useraccess;
 import java.util.List;
 
 import com.phegondev.usersmanagementsystem.dto.useraccess.ActionDTO;
+import com.phegondev.usersmanagementsystem.entity.OurUsers;
 import com.phegondev.usersmanagementsystem.entity.useraccess.Action;
 
 
@@ -16,5 +17,6 @@ public interface ActionService {
 	  public void deleteActionById(Long id);
 	  void createActionIfNotExist();
 	  void mapDefaultActionsToRoles();
+	  void mapAllActionsToAdminUser(OurUsers adminUser);
 
 }

@@ -28,6 +28,8 @@ import com.phegondev.usersmanagementsystem.repository.UsersRepo;
 import com.phegondev.usersmanagementsystem.repository.useraccess.ActionRepo;
 import com.phegondev.usersmanagementsystem.repository.useraccess.RoleRepo;
 import com.phegondev.usersmanagementsystem.repository.useraccess.UserActionMappingRepository;
+import com.phegondev.usersmanagementsystem.service.useraccess.ActionService;
+import com.phegondev.usersmanagementsystem.service.useraccess.RoleService;
 import com.phegondev.usersmanagementsystem.service.useraccess.UserService;
 
 
@@ -36,26 +38,33 @@ import com.phegondev.usersmanagementsystem.service.useraccess.UserService;
 @Transactional(rollbackFor = Exception.class)
 public class UserServiceImpl implements UserService {
 	
-	private final UsersRepo usersRepo;
-	private final ActionRepo actionRepo;
-	private final RoleRepo roleRepo;
-	private final UserActionMappingRepository userActionMappingRepository;
-	private final EmployeeRepository employeeRepository;
-	private final PasswordEncoder passwordEncoder;
+	   private final UsersRepo usersRepo;
+	    private final ActionRepo actionRepo;
+	    private final RoleRepo roleRepo;
+	    private final UserActionMappingRepository userActionMappingRepository;
+	    private final EmployeeRepository employeeRepository;
+	    private final PasswordEncoder passwordEncoder;
 
-	public UserServiceImpl(UsersRepo usersRepo,
-	                       ActionRepo actionRepo,
-	                       RoleRepo roleRepo,
-	                       UserActionMappingRepository userActionMappingRepository,
-	                       EmployeeRepository employeeRepository,
-	                       PasswordEncoder passwordEncoder) {
-	    this.usersRepo = usersRepo;
-	    this.actionRepo = actionRepo;
-	    this.roleRepo = roleRepo;
-	    this.userActionMappingRepository = userActionMappingRepository;
-	    this.employeeRepository = employeeRepository;
-	    this.passwordEncoder = passwordEncoder;
-	}
+	    private final ActionService actionService;
+	    private final RoleService roleService;
+
+	    public UserServiceImpl(UsersRepo usersRepo,
+	                           ActionRepo actionRepo,
+	                           RoleRepo roleRepo,
+	                           UserActionMappingRepository userActionMappingRepository,
+	                           EmployeeRepository employeeRepository,
+	                           PasswordEncoder passwordEncoder,
+	                           ActionService actionService,
+	                           RoleService roleService) {
+	        this.usersRepo = usersRepo;
+	        this.actionRepo = actionRepo;
+	        this.roleRepo = roleRepo;
+	        this.userActionMappingRepository = userActionMappingRepository;
+	        this.employeeRepository = employeeRepository;
+	        this.passwordEncoder = passwordEncoder;
+	        this.actionService = actionService;
+	        this.roleService = roleService;
+	    }
 
 
 	@Override
@@ -104,73 +113,95 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public void setupAdminUser() {
-
-
-	    // Personal details
-        personal personalInfo = new personal();
-        personalInfo.setEmpId("EMP000");
-        personalInfo.setFirstName("Admin");
-        personalInfo.setLastName("User");
-        personalInfo.setDateOfBirth(new Date(0, 0, 0));
-        personalInfo.setGender("Male");
-        personalInfo.setMaritalStatus("Single");
-        personalInfo.setNationality("DemoLand");
-
-        // Identification
-        Identification idInfo = new Identification();
-        idInfo.setImmigrationStatus("Citizen");
-        idInfo.setIdProof("Passport");
-        idInfo.setDocumentNumber("ABC12345");
-
-        // Work
-        Work workInfo = new Work();
-        workInfo.setEmploymentStatus("Permanent");
-        workInfo.setDepartment("IT");
-        workInfo.setJobTitle("System Administrator");
-        workInfo.setDoj(new Date(0, 0, 0));
-        workInfo.setTimeZone("UTC");
-
-        // Contact
-        Contact contact = new Contact();
-        contact.setResidentialAddress("123 Admin St.");
-        contact.setCity("AdminCity");
-        contact.setState("AdminState");
-        contact.setCountry("AdminCountry");
-        contact.setPostalCode("123456");
-        contact.setWorkEmail("admin@company.com");
-        contact.setMobileNumber("1234567890");
-        contact.setPrimaryEmergencyContactName("John Doe");
-        contact.setPrimaryEmergencyContactNumber("0987654321");
-        contact.setRelationshipToPrimaryEmergencyContact("Brother");
-
-        // Report
-        Report report = new Report();
-        report.setManager("CTO");
-
-        // Employee
-        Employee adminEmployee = new Employee();
-        adminEmployee.setPersonal(personalInfo);
-        adminEmployee.setIdentification(idInfo);
-        adminEmployee.setWork(workInfo);
-        adminEmployee.setContact(contact);
-        adminEmployee.setReport(report);
-
-        employeeRepository.save(adminEmployee);
-        
-        OurUsers adminUser = new OurUsers();
-        adminUser.setName("admin");
-        adminUser.setPassword(passwordEncoder.encode("admin123")); // default password
-        adminUser.setRole("admin");
-        adminUser.setEmail("superadmin@infinevocloud.com");
-        adminUser.setCity("Dummy");
-  
-        adminUser.setEmpId("EMP000");
-        adminUser.setEmployee(adminEmployee);
-
-        usersRepo.save(adminUser);
-        
-        
 		
+		 if (!usersRepo.existsByEmail("superadmin@infinevocloud.com")) {
+
+		        System.out.println("Creating admin user...");
+		        OurUsers adminUser = createAdminUser();
+		        System.out.println("Admin user created.");
+
+		        System.out.println("Creating roles if not exist...");
+		        roleService.createRoleIfNotExist();
+
+		        System.out.println("Creating actions if not exist...");
+		        actionService.createActionIfNotExist();
+
+		        System.out.println("Mapping default actions to roles...");
+		        actionService.mapDefaultActionsToRoles();
+
+		        System.out.println("Mapping all actions to admin user...");
+		        actionService.mapAllActionsToAdminUser(adminUser);
+
+		    } else {
+		        System.out.println("Super admin already exists. Skipping admin setup.");
+		    }
+	}
+	
+	
+	private OurUsers createAdminUser() {
+	    System.out.println("Creating employee personal details...");
+	    personal personalInfo = new personal();
+	    personalInfo.setEmpId("EMP000");
+	    personalInfo.setFirstName("Admin");
+	    personalInfo.setLastName("User");
+	    personalInfo.setDateOfBirth(new Date(0, 0, 0));
+	    personalInfo.setGender("Male");
+	    personalInfo.setMaritalStatus("Single");
+	    personalInfo.setNationality("DemoLand");
+
+	    System.out.println("Creating identification details...");
+	    Identification idInfo = new Identification();
+	    idInfo.setImmigrationStatus("Citizen");
+	    idInfo.setIdProof("Passport");
+	    idInfo.setDocumentNumber("ABC12345");
+
+	    System.out.println("Creating work details...");
+	    Work workInfo = new Work();
+	    workInfo.setEmploymentStatus("Permanent");
+	    workInfo.setDepartment("IT");
+	    workInfo.setJobTitle("System Administrator");
+	    workInfo.setDoj(new Date(0, 0, 0));
+	    workInfo.setTimeZone("UTC");
+
+	    System.out.println("Creating contact details...");
+	    Contact contact = new Contact();
+	    contact.setResidentialAddress("123 Admin St.");
+	    contact.setCity("AdminCity");
+	    contact.setState("AdminState");
+	    contact.setCountry("AdminCountry");
+	    contact.setPostalCode("123456");
+	    contact.setWorkEmail("admin@company.com");
+	    contact.setMobileNumber("1234567890");
+	    contact.setPrimaryEmergencyContactName("John Doe");
+	    contact.setPrimaryEmergencyContactNumber("0987654321");
+	    contact.setRelationshipToPrimaryEmergencyContact("Brother");
+
+	    System.out.println("Creating report info...");
+	    Report report = new Report();
+	    report.setManager("CTO");
+
+	    System.out.println("Saving employee...");
+	    Employee adminEmployee = new Employee();
+	    adminEmployee.setPersonal(personalInfo);
+	    adminEmployee.setIdentification(idInfo);
+	    adminEmployee.setWork(workInfo);
+	    adminEmployee.setContact(contact);
+	    adminEmployee.setReport(report);
+	    employeeRepository.save(adminEmployee);
+
+	    System.out.println("Creating OurUsers record...");
+	    OurUsers adminUser = new OurUsers();
+	    adminUser.setName("admin");
+	    adminUser.setPassword(passwordEncoder.encode("admin123"));
+	    adminUser.setRole("admin");
+	    adminUser.setEmail("superadmin@infinevocloud.com");
+	    adminUser.setCity("Dummy");
+	    adminUser.setEmpId("EMP000");
+	    adminUser.setEmployee(adminEmployee);
+	    usersRepo.save(adminUser);
+
+	    System.out.println("Admin user creation done.");
+	    return adminUser;
 	}
 
 }

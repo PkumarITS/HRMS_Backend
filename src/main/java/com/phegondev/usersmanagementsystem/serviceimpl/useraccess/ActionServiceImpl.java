@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.phegondev.usersmanagementsystem.dto.useraccess.ActionDTO;
+import com.phegondev.usersmanagementsystem.entity.OurUsers;
 import com.phegondev.usersmanagementsystem.entity.useraccess.Action;
 import com.phegondev.usersmanagementsystem.entity.useraccess.Role;
 import com.phegondev.usersmanagementsystem.entity.useraccess.UserActionMapping;
@@ -146,6 +147,8 @@ public class ActionServiceImpl implements ActionService {
     @Override
     public void createActionIfNotExist() {
 
+        System.out.println("Checking and creating actions...");
+
         List<Action> predefinedActions = List.of(
                 new Action("Add Employee", "ADD_EMPLOYEE", "Add a new employee"),
                 new Action("update employee", "UPDATE_EMPLOYEE", "updating employee"),
@@ -187,76 +190,72 @@ public class ActionServiceImpl implements ActionService {
         }
     }
 
-	@Override
-	public void mapDefaultActionsToRoles() {
+    @Override
+    public void mapDefaultActionsToRoles() {
+        System.out.println("Mapping default actions to roles...");
 
+        Role adminRole = roleRepository.findByRoleName("ADMIN");
+        Role hrRole = roleRepository.findByRoleName("HR");
+        Role userRole = roleRepository.findByRoleName("USER");
+        Role supervisorRole = roleRepository.findByRoleName("SUPERVISOR");
 
-		   Role adminRole = roleRepository.findByRoleName("ADMIN");		           
-		   Role hrRole = roleRepository.findByRoleName("HR");		          
-		   Role userRole = roleRepository.findByRoleName("USER");
-		   Role supervisorRole = roleRepository.findByRoleName("SUPERVISOR");
-		          
+        List<Action> allActions = actionRepository.findAll();
 
-		    // 2. Fetch all actions
-		    List<Action> allActions = actionRepository.findAll();
+        // Admin gets all actions
+        adminRole.setActionList(allActions);
+        System.out.println("Mapped all actions to ADMIN.");
 
-		    // 3. Map all actions to ADMIN		  
-		     adminRole.setActionList(allActions);
-             
+        // HR specific actions
+        List<String> hrAliases = List.of("MANAGE_EMPLOYEE", "MANAGE_LEAVE", "MANAGE_LEAVE_TYPES", "MANAGE_LEAVE_BALANCE", "MANAGE_HOLIDAY", "MANAGE_ATTENDANCE", "VIEW_PROFILE");
+        List<Action> hrActions = allActions.stream().filter(a -> hrAliases.contains(a.getAlias())).collect(Collectors.toList());
+        hrRole.setActionList(hrActions);
+        System.out.println("Mapped actions to HR.");
 
-		    // 4. Map specific actions to HR
-                            List<String> hrAliases = List.of("MANAGE_EMPLOYEE",
-                                    "MANAGE_LEAVE",
-                                    "MANAGE_LEAVE_TYPES",
-                                    "MANAGE_LEAVE_BALANCE",
-                                    "MANAGE_HOLIDAY",
-                                    "MANAGE_ATTENDANCE",
-                                    "VIEW_PROFILE");
+        // Supervisor specific actions
+        List<String> supervisorAliases = List.of("MANAGE_PROJECT", "MANAGE_TASK", "MANAGE_TIMESHEET", "MANAGE_LEAVE", "MANAGE_LEAVE_TYPES", "MANAGE_LEAVE_BALANCE", "MANAGE_ATTENDANCE", "VIEW_PROFILE", "VIEW_HOLIDAY");
+        List<Action> supervisorActions = allActions.stream().filter(a -> supervisorAliases.contains(a.getAlias())).collect(Collectors.toList());
+        supervisorRole.setActionList(supervisorActions);
+        System.out.println("Mapped actions to SUPERVISOR.");
 
-		     List<Action> hrActions = allActions.stream()
-		         .filter(action -> hrAliases.contains(action.getAlias()))
-		         .collect(Collectors.toList());
-		     
-		     hrRole.setActionList(hrActions);
-		     
-		     // 4. Map specific actions to SUPERVISOR
-		     List<String> supervisorAliases = List.of("MANAGE_PROJECT",
-                     "MANAGE_TASK",
-                     "MANAGE_TIMESHEET",
-                     "MANAGE_LEAVE",
-                     "MANAGE_LEAVE_TYPES",
-                     "MANAGE_LEAVE_BALANCE",
-                     "MANAGE_ATTENDANCE",
-                     "VIEW_PROFILE",
-                     "VIEW_HOLIDAY");
-		     List<Action> supervisorActions = allActions.stream()
-		         .filter(action -> supervisorAliases.contains(action.getAlias()))
-		         .collect(Collectors.toList());
-		     supervisorRole.setActionList(supervisorActions);
+        // User specific actions
+        List<String> userAliases = List.of("VIEW_TIMESHEET", "VIEW_PROFILE", "VIEW_USER_DASHBOARD", "VIEW_PROJECT", "VIEW_TASK", "VIEW_ATTENDANCE", "VIEW_LEAVE", "VIEW_LEAVE_BALANCE", "VIEW_HOLIDAY");
+        List<Action> userActions = allActions.stream().filter(a -> userAliases.contains(a.getAlias())).collect(Collectors.toList());
+        userRole.setActionList(userActions);
+        System.out.println("Mapped actions to USER.");
 
-		    // 5. Map specific actions to USERS
-		    List<String> userAliases = List.of("VIEW_TIMESHEET",
-                    "VIEW_PROFILE",
-                    "VIEW_USER_DASHBOARD",
-                    "VIEW_PROJECT",
-                    "VIEW_TASK",
-                    "VIEW_ATTENDENCE",
-                    "VIEW_LEAVE",
-                    "VIEW_LEAVE_BALANCE",
-                    "VIEW_HOLIDAY");	
-		    List<Action> userActions = allActions.stream()
-			         .filter(action -> userAliases.contains(action.getAlias()))
-			         .collect(Collectors.toList());
-		    userRole.setActionList(userActions);
+        roleRepository.save(adminRole);
+        roleRepository.save(hrRole);
+        roleRepository.save(supervisorRole);
+        roleRepository.save(userRole);
 
-		    // 6. Save changes
-		    roleRepository.save(adminRole);
-		    roleRepository.save(hrRole);
-		    roleRepository.save(supervisorRole);
-		    roleRepository.save(userRole);
-
-		    System.out.println("Actions mapped to roles successfully.");
+        System.out.println("All role-action mappings saved.");
+    }
+	
+	public void mapAllActionsToAdminUser(OurUsers adminUser) {
 		
+		 System.out.println("Mapping all actions to admin user...");
+
+	    // 2. Get ADMIN role
+	    Role adminRole = roleRepository.findByRoleName("ADMIN");
+	
+	    // 3. Fetch all actions
+	    List<Action> allActions = actionRepository.findAll();
+
+	    // 4. Create mappings
+	    List<UserActionMapping> mappings = new ArrayList<>();
+	    for (Action action : allActions) {
+	    	
+	            UserActionMapping mapping = new UserActionMapping();
+	            mapping.setUser(adminUser);
+	            mapping.setRole(adminRole);
+	            mapping.setAction(action);
+	            mappings.add(mapping);
+	        
+	    }
+
+	    // 5. Save all mappings
+	    userActionMappingRepository.saveAll(mappings);
+	    System.out.println("Mapped " + mappings.size() + " actions to admin user successfully.");
 	}
 
 	
