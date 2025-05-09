@@ -52,7 +52,12 @@ public class UserDTO {
 	}
 
 	
-    public UserDTO(Integer userId, String email, String name, String city, String role, String empId) {
+	
+    public UserDTO() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	public UserDTO(Integer userId, String email, String name, String city, String role, String empId) {
         this.userId = userId;
 		this.email = email;
         this.name = name;

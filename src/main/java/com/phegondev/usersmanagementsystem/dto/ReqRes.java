@@ -30,11 +30,20 @@ public class ReqRes {
     private Map<String, Object> employeeData;
     private List<String> actions;
     private List<UserDTO> userDTOList;
+    private UserDTO user;
+    
+    
     
     
 
     
     
+	public UserDTO getUser() {
+		return user;
+	}
+	public void setUser(UserDTO user) {
+		this.user = user;
+	}
 	public List<UserDTO> getUserDTOList() {
 		return userDTOList;
 	}

@@ -176,7 +176,10 @@ public class UsersManagementService {
 
             reqRes.setStatusCode(200);
             reqRes.setMessage("Complete profile fetched successfully");
-            reqRes.setOurUsers(user);
+      //      reqRes.setOurUsers(user); convertFromEntity
+            
+            reqRes.setUser(convertFromEntity(user));
+            
             reqRes.setEmployeeData(employeeData);
 
             System.out.println("Profile fetch successful. Returning response.");
@@ -398,6 +401,17 @@ public class UsersManagementService {
             reqRes.setMessage("Error occurred while getting your info : " + e.getMessage());
         }
         return reqRes;
+    }
+    
+    public static UserDTO convertFromEntity(OurUsers user) {
+        UserDTO dto = new UserDTO();
+        dto.setUserId(user.getId());
+        dto.setEmail(user.getEmail());
+        dto.setName(user.getName());
+        dto.setCity(user.getCity());
+        dto.setRole(user.getRole());
+        dto.setEmpId(user.getEmpId());
+        return dto;
     }
 
 }
