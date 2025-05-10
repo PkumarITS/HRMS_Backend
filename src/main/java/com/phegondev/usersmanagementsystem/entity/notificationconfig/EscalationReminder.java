@@ -1,13 +1,14 @@
 package com.phegondev.usersmanagementsystem.entity.notificationconfig;
 
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import com.phegondev.usersmanagementsystem.enumuration.ReminderLevel;
 
 import jakarta.persistence.*;
 
@@ -20,8 +21,11 @@ public class EscalationReminder {
     private Long id;
 
     private boolean enabled;
-    private String day;
-    private String time;
+
+    @Enumerated(EnumType.STRING)
+    private DayOfWeek day;
+
+    private LocalTime time;
 
     @ElementCollection
     @CollectionTable(name = "escalation_reminder_recipients", joinColumns = @JoinColumn(name = "reminder_id"))
@@ -33,7 +37,6 @@ public class EscalationReminder {
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
-
 
     // Getters and Setters
 
@@ -53,23 +56,21 @@ public class EscalationReminder {
         this.enabled = enabled;
     }
 
-    public String getDay() {
+    public DayOfWeek getDay() {
         return day;
     }
 
-    public void setDay(String day) {
+    public void setDay(DayOfWeek day) {
         this.day = day;
     }
 
-    public String getTime() {
+    public LocalTime getTime() {
         return time;
     }
 
-    public void setTime(String time) {
+    public void setTime(LocalTime time) {
         this.time = time;
     }
-
-
 
     public List<String> getRecipients() {
         return recipients;
@@ -94,33 +95,28 @@ public class EscalationReminder {
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
-    
+
     
 
     public EscalationReminder() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-    
-    
 
-	public EscalationReminder(Long id, boolean enabled, String day, String time, List<String> recipients,
-			LocalDateTime createdAt, LocalDateTime updatedAt) {
-		super();
-		this.id = id;
-		this.enabled = enabled;
-		this.day = day;
-		this.time = time;
-		this.recipients = recipients;
-		this.createdAt = createdAt;
-		this.updatedAt = updatedAt;
-	}
+	public EscalationReminder(Long id, boolean enabled, DayOfWeek day, LocalTime time, List<String> recipients,
+                              LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.id = id;
+        this.enabled = enabled;
+        this.day = day;
+        this.time = time;
+        this.recipients = recipients;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
 
-	@Override
+    @Override
     public String toString() {
         return "EscalationReminder [id=" + id + ", enabled=" + enabled + ", day=" + day + ", time=" + time +
-                ",  recipients=" + recipients +
-                ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + "]";
+               ", recipients=" + recipients + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + "]";
     }
 }
-

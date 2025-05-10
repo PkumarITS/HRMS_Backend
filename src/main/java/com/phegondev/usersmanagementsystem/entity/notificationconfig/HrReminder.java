@@ -1,6 +1,8 @@
 package com.phegondev.usersmanagementsystem.entity.notificationconfig;
 
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,8 +22,11 @@ public class HrReminder {
     private Long id;
 
     private boolean enabled;
-    private String day;
-    private String time;
+
+    @Enumerated(EnumType.STRING)
+    private DayOfWeek day;
+
+    private LocalTime time;
 
     @Enumerated(EnumType.STRING)
     private ReminderLevel level;
@@ -37,8 +42,7 @@ public class HrReminder {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-
-    // Getters and setters
+    // Getters and Setters
 
     public Long getId() {
         return id;
@@ -56,19 +60,19 @@ public class HrReminder {
         this.enabled = enabled;
     }
 
-    public String getDay() {
+    public DayOfWeek getDay() {
         return day;
     }
 
-    public void setDay(String day) {
+    public void setDay(DayOfWeek day) {
         this.day = day;
     }
 
-    public String getTime() {
+    public LocalTime getTime() {
         return time;
     }
 
-    public void setTime(String time) {
+    public void setTime(LocalTime time) {
         this.time = time;
     }
 
@@ -103,16 +107,14 @@ public class HrReminder {
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
-    
 
-    
+    // Constructors
 
     public HrReminder() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
+        super();
+    }
 
-	public HrReminder(Long id, boolean enabled, String day, String time, ReminderLevel level,
+    public HrReminder(Long id, boolean enabled, DayOfWeek day, LocalTime time, ReminderLevel level,
                       List<String> recipients, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.enabled = enabled;
@@ -123,7 +125,6 @@ public class HrReminder {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
-
 
     @Override
     public String toString() {

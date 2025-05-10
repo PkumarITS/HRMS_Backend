@@ -1,6 +1,8 @@
 package com.phegondev.usersmanagementsystem.entity.notificationconfig;
 
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,8 +22,11 @@ public class SupervisorReminder {
     private Long id;
 
     private boolean enabled;
-    private String day;
-    private String time;
+    
+    @Enumerated(EnumType.STRING)
+    private DayOfWeek day;  // Changed to DayOfWeek
+    
+    private LocalTime time;  // Changed to LocalTime
     
     @Enumerated(EnumType.STRING)
     private ReminderLevel level;
@@ -30,7 +35,6 @@ public class SupervisorReminder {
     @CollectionTable(name = "supervisor_reminder_recipients", joinColumns = @JoinColumn(name = "reminder_id"))
     @Column(name = "email")
     private List<String> recipients = new ArrayList<>();
-    
 
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -38,97 +42,94 @@ public class SupervisorReminder {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-	public Long getId() {
-		return id;
-	}
+    // Getters and Setters
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public boolean isEnabled() {
-		return enabled;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
-	}
+    public boolean isEnabled() {
+        return enabled;
+    }
 
-	public String getDay() {
-		return day;
-	}
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
 
-	public void setDay(String day) {
-		this.day = day;
-	}
+    public DayOfWeek getDay() {
+        return day;
+    }
 
-	public String getTime() {
-		return time;
-	}
+    public void setDay(DayOfWeek day) {
+        this.day = day;
+    }
 
-	public void setTime(String time) {
-		this.time = time;
-	}
+    public LocalTime getTime() {
+        return time;
+    }
 
-	public ReminderLevel getLevel() {
-		return level;
-	}
+    public void setTime(LocalTime time) {
+        this.time = time;
+    }
 
-	public void setLevel(ReminderLevel level) {
-		this.level = level;
-	}
+    public ReminderLevel getLevel() {
+        return level;
+    }
 
-	public List<String> getRecipients() {
-		return recipients;
-	}
+    public void setLevel(ReminderLevel level) {
+        this.level = level;
+    }
 
-	public void setRecipients(List<String> recipients) {
-		this.recipients = recipients;
-	}
+    public List<String> getRecipients() {
+        return recipients;
+    }
 
-	public LocalDateTime getCreatedAt() {
-		return createdAt;
-	}
+    public void setRecipients(List<String> recipients) {
+        this.recipients = recipients;
+    }
 
-	public void setCreatedAt(LocalDateTime createdAt) {
-		this.createdAt = createdAt;
-	}
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
 
-	public LocalDateTime getUpdatedAt() {
-		return updatedAt;
-	}
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
 
-	public void setUpdatedAt(LocalDateTime updatedAt) {
-		this.updatedAt = updatedAt;
-	}
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
 
-	public SupervisorReminder() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
 
-	public SupervisorReminder(Long id, boolean enabled, String day, String time, ReminderLevel level,
-			List<String> recipients, LocalDateTime createdAt, LocalDateTime updatedAt) {
-		super();
-		this.id = id;
-		this.enabled = enabled;
-		this.day = day;
-		this.time = time;
-		this.level = level;
-		this.recipients = recipients;
-		this.createdAt = createdAt;
-		this.updatedAt = updatedAt;
-	}
+    // Constructors
 
-	@Override
-	public String toString() {
-		return "SupervisorReminder [id=" + id + ", enabled=" + enabled + ", day=" + day + ", time=" + time + ", level="
-				+ level + ", recipients=" + recipients + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + "]";
-	}
-    
-    
-    
-    
-    
+    public SupervisorReminder() {
+        super();
+    }
 
+    public SupervisorReminder(Long id, boolean enabled, DayOfWeek day, LocalTime time, ReminderLevel level,
+                              List<String> recipients, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.id = id;
+        this.enabled = enabled;
+        this.day = day;
+        this.time = time;
+        this.level = level;
+        this.recipients = recipients;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+
+    @Override
+    public String toString() {
+        return "SupervisorReminder [id=" + id + ", enabled=" + enabled + ", day=" + day + ", time=" + time +
+                ", level=" + level + ", recipients=" + recipients + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + "]";
+    }
 }
+

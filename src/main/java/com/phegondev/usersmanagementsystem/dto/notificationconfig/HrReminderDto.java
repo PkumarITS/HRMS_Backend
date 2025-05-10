@@ -1,6 +1,8 @@
 package com.phegondev.usersmanagementsystem.dto.notificationconfig;
 
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 import com.phegondev.usersmanagementsystem.enumuration.ReminderLevel;
@@ -9,14 +11,12 @@ public class HrReminderDto {
 
     private Long id;
     private boolean enabled;
-    private String day;
-    private String time;
+    private DayOfWeek day;  // Changed to DayOfWeek
+    private LocalTime time;  // Changed to LocalTime
     private ReminderLevel level;
     private List<String> recipients;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-
-
 
     // Getters and Setters
 
@@ -36,19 +36,19 @@ public class HrReminderDto {
         this.enabled = enabled;
     }
 
-    public String getDay() {
+    public DayOfWeek getDay() {
         return day;
     }
 
-    public void setDay(String day) {
+    public void setDay(DayOfWeek day) {
         this.day = day;
     }
 
-    public String getTime() {
+    public LocalTime getTime() {
         return time;
     }
 
-    public void setTime(String time) {
+    public void setTime(LocalTime time) {
         this.time = time;
     }
 
@@ -83,17 +83,14 @@ public class HrReminderDto {
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
-    
-    
-    
+
+    // Constructors
 
     public HrReminderDto() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-    
+        super();
+    }
 
-    public HrReminderDto(Long id, boolean enabled, String day, String time, ReminderLevel level,
+    public HrReminderDto(Long id, boolean enabled, DayOfWeek day, LocalTime time, ReminderLevel level,
                          List<String> recipients, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.enabled = enabled;
@@ -105,7 +102,7 @@ public class HrReminderDto {
         this.updatedAt = updatedAt;
     }
 
-	@Override
+    @Override
     public String toString() {
         return "HrReminderDto [id=" + id + ", enabled=" + enabled + ", day=" + day + ", time=" + time +
                 ", level=" + level + ", recipients=" + recipients + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + "]";

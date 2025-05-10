@@ -1,21 +1,39 @@
 package com.phegondev.usersmanagementsystem.dto.notificationconfig;
 
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
+
 import com.phegondev.usersmanagementsystem.enumuration.ReminderLevel;
 
 public class SupervisorReminderDto {
 
     private Long id;
     private boolean enabled;
-    private String day;
-    private String time;
+    private DayOfWeek day;
+    private LocalTime time;
     private ReminderLevel level;
     private List<String> recipients;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
- 
+    // Constructors
+    public SupervisorReminderDto() {
+        super();
+    }
+
+    public SupervisorReminderDto(Long id, boolean enabled, DayOfWeek day, LocalTime time, ReminderLevel level,
+                                  List<String> recipients, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.id = id;
+        this.enabled = enabled;
+        this.day = day;
+        this.time = time;
+        this.level = level;
+        this.recipients = recipients;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
 
     // Getters and Setters
 
@@ -27,13 +45,13 @@ public class SupervisorReminderDto {
 
     public void setEnabled(boolean enabled) { this.enabled = enabled; }
 
-    public String getDay() { return day; }
+    public DayOfWeek getDay() { return day; }
 
-    public void setDay(String day) { this.day = day; }
+    public void setDay(DayOfWeek day) { this.day = day; }
 
-    public String getTime() { return time; }
+    public LocalTime getTime() { return time; }
 
-    public void setTime(String time) { this.time = time; }
+    public void setTime(LocalTime time) { this.time = time; }
 
     public ReminderLevel getLevel() { return level; }
 
@@ -50,27 +68,8 @@ public class SupervisorReminderDto {
     public LocalDateTime getUpdatedAt() { return updatedAt; }
 
     public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
-    
-    
 
-    public SupervisorReminderDto() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-
-    public SupervisorReminderDto(Long id, boolean enabled, String day, String time, ReminderLevel level,
-                                  List<String> recipients, LocalDateTime createdAt, LocalDateTime updatedAt) {
-        this.id = id;
-        this.enabled = enabled;
-        this.day = day;
-        this.time = time;
-        this.level = level;
-        this.recipients = recipients;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-    }
-
-	@Override
+    @Override
     public String toString() {
         return "SupervisorReminderDto [id=" + id + ", enabled=" + enabled + ", day=" + day + ", time=" + time
             + ", level=" + level + ", recipients=" + recipients + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + "]";

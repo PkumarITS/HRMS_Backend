@@ -1,6 +1,8 @@
 package com.phegondev.usersmanagementsystem.dto.notificationconfig;
 
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 import com.phegondev.usersmanagementsystem.enumuration.ReminderLevel;
 
@@ -8,15 +10,31 @@ public class EmployeeReminderDto {
 
     private Long id;
     private boolean enabled;
-    private String day;
-    private String time;
+    private DayOfWeek day;
+    private LocalTime time;
     private ReminderLevel level;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+    
+
+    public EmployeeReminderDto() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	public EmployeeReminderDto(Long id, boolean enabled, DayOfWeek day, LocalTime time,
+                               ReminderLevel level, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.id = id;
+        this.enabled = enabled;
+        this.day = day;
+        this.time = time;
+        this.level = level;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
 
     // Getters and Setters
-
     public Long getId() {
         return id;
     }
@@ -33,19 +51,19 @@ public class EmployeeReminderDto {
         this.enabled = enabled;
     }
 
-    public String getDay() {
+    public DayOfWeek getDay() {
         return day;
     }
 
-    public void setDay(String day) {
+    public void setDay(DayOfWeek day) {
         this.day = day;
     }
 
-    public String getTime() {
+    public LocalTime getTime() {
         return time;
     }
 
-    public void setTime(String time) {
+    public void setTime(LocalTime time) {
         this.time = time;
     }
 
@@ -72,35 +90,10 @@ public class EmployeeReminderDto {
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
-    
-    
-    
 
-	public EmployeeReminderDto() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-	
-	
-
-	public EmployeeReminderDto(Long id, boolean enabled, String day, String time, ReminderLevel level,
-			LocalDateTime createdAt, LocalDateTime updatedAt) {
-		super();
-		this.id = id;
-		this.enabled = enabled;
-		this.day = day;
-		this.time = time;
-		this.level = level;
-		this.createdAt = createdAt;
-		this.updatedAt = updatedAt;
-	}
-
-	@Override
-	public String toString() {
-		return "EmployeeReminderDto [id=" + id + ", enabled=" + enabled + ", day=" + day + ", time=" + time + ", level="
-				+ level + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + "]";
-	}
-    
-    
-    
+    @Override
+    public String toString() {
+        return "EmployeeReminderDto [id=" + id + ", enabled=" + enabled + ", day=" + day + ", time=" + time +
+               ", level=" + level + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + "]";
+    }
 }
