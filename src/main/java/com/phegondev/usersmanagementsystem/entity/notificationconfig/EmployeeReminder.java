@@ -24,6 +24,7 @@ public class EmployeeReminder {
     @Enumerated(EnumType.STRING)
     private DayOfWeek day;
 
+    
     private LocalTime time;
 
     @Enumerated(EnumType.STRING)
@@ -34,6 +35,10 @@ public class EmployeeReminder {
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+    
+    @Column(name = "last_executed_at")
+    private LocalDateTime lastExecutedAt;
+
 
   
 
@@ -54,6 +59,15 @@ public class EmployeeReminder {
     }
 
     // Getters and setters
+	
+	 public LocalDateTime getLastExecutedAt() {
+			return lastExecutedAt;
+		}
+
+		public void setLastExecutedAt(LocalDateTime lastExecutedAt) {
+			this.lastExecutedAt = lastExecutedAt;
+		}
+
     public Long getId() {
         return id;
     }

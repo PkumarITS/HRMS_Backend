@@ -41,6 +41,19 @@ public class SupervisorReminder {
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+    
+    
+    @Column(name = "last_executed_at")
+    private LocalDateTime lastExecutedAt;
+
+    public LocalDateTime getLastExecutedAt() {
+		return lastExecutedAt;
+	}
+
+	public void setLastExecutedAt(LocalDateTime lastExecutedAt) {
+		this.lastExecutedAt = lastExecutedAt;
+	}
+
 
     // Getters and Setters
 

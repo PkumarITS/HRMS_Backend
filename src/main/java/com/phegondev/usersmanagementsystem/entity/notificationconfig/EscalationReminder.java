@@ -25,6 +25,7 @@ public class EscalationReminder {
     @Enumerated(EnumType.STRING)
     private DayOfWeek day;
 
+    
     private LocalTime time;
 
     @ElementCollection
@@ -37,6 +38,18 @@ public class EscalationReminder {
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+    
+    
+    @Column(name = "last_executed_at")
+    private LocalDateTime lastExecutedAt;
+
+    public LocalDateTime getLastExecutedAt() {
+		return lastExecutedAt;
+	}
+
+	public void setLastExecutedAt(LocalDateTime lastExecutedAt) {
+		this.lastExecutedAt = lastExecutedAt;
+	}
 
     // Getters and Setters
 

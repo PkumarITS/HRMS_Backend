@@ -26,6 +26,7 @@ public class HrReminder {
     @Enumerated(EnumType.STRING)
     private DayOfWeek day;
 
+    
     private LocalTime time;
 
     @Enumerated(EnumType.STRING)
@@ -41,6 +42,19 @@ public class HrReminder {
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+    
+    
+    @Column(name = "last_executed_at")
+    private LocalDateTime lastExecutedAt;
+
+    public LocalDateTime getLastExecutedAt() {
+		return lastExecutedAt;
+	}
+
+	public void setLastExecutedAt(LocalDateTime lastExecutedAt) {
+		this.lastExecutedAt = lastExecutedAt;
+	}
+
 
     // Getters and Setters
 

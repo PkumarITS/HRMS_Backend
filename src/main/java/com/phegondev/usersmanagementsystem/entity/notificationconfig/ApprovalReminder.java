@@ -26,6 +26,7 @@ public class ApprovalReminder {
     @Enumerated(EnumType.STRING)
     private DayOfWeek day;
 
+    
     private LocalTime time;
 
     @Enumerated(EnumType.STRING)
@@ -41,16 +42,30 @@ public class ApprovalReminder {
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+    
+    @Column(name = "last_executed_at")
+    private LocalDateTime lastExecutedAt;
+
 
 
 
     // Getters and setters
+    
+    
 
     public Long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public LocalDateTime getLastExecutedAt() {
+		return lastExecutedAt;
+	}
+
+	public void setLastExecutedAt(LocalDateTime lastExecutedAt) {
+		this.lastExecutedAt = lastExecutedAt;
+	}
+
+	public void setId(Long id) {
         this.id = id;
     }
 
