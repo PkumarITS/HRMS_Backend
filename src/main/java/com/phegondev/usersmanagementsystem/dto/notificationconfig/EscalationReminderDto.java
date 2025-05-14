@@ -5,11 +5,14 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 public class EscalationReminderDto {
 
     private Long id;
     private boolean enabled;
     private DayOfWeek day;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
     private LocalTime time;
     private List<String> recipients;
     private LocalDateTime createdAt;

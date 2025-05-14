@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.phegondev.usersmanagementsystem.enumuration.ReminderLevel;
 
 public class SupervisorReminderDto {
@@ -12,6 +13,7 @@ public class SupervisorReminderDto {
     private Long id;
     private boolean enabled;
     private DayOfWeek day;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
     private LocalTime time;
     private ReminderLevel level;
     private List<String> recipients;
