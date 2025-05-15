@@ -31,7 +31,7 @@ public class SupervisorReminder {
     @Enumerated(EnumType.STRING)
     private ReminderLevel level;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "supervisor_reminder_recipients", joinColumns = @JoinColumn(name = "reminder_id"))
     @Column(name = "email")
     private List<String> recipients = new ArrayList<>();

@@ -28,7 +28,7 @@ public class EscalationReminder {
     
     private LocalTime time;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "escalation_reminder_recipients", joinColumns = @JoinColumn(name = "reminder_id"))
     @Column(name = "email")
     private List<String> recipients = new ArrayList<>();

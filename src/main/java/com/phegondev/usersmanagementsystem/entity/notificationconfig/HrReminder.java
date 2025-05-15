@@ -32,7 +32,7 @@ public class HrReminder {
     @Enumerated(EnumType.STRING)
     private ReminderLevel level;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "hr_reminder_recipients", joinColumns = @JoinColumn(name = "reminder_id"))
     @Column(name = "email")
     private List<String> recipients = new ArrayList<>();
