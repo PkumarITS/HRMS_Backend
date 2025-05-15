@@ -170,72 +170,67 @@ public class NotificationSchedularServiceImpl implements NotificationSchedularSe
 
 	@Override
 	public void runSupervisorReminder(SupervisorReminder reminder) {
+	    LocalDate today = LocalDate.now();
 
-	      try {
-	          LocalDate today = LocalDate.now();
-	          LocalDate currentWeekStart = today.with(DayOfWeek.MONDAY);
+	    try {
+	        LocalDate currentWeekStart = today.with(DayOfWeek.MONDAY);
 
-	          System.out.println("Today's date: " + today);
-	          System.out.println("Current week start (Monday): " + currentWeekStart);
+	        List<Timesheet> draftTimesheets = timesheetRepo.findByStatusAndWeekStart("DRAFT", currentWeekStart);
+	        System.out.println("Total draft timesheets found: " + draftTimesheets.size());
 
-	          List<Timesheet> draftTimesheets = timesheetRepo.findByStatusAndWeekStart("DRAFT", currentWeekStart);
-	          System.out.println("Total draft timesheets found: " + draftTimesheets.size());
+	        if (draftTimesheets.isEmpty()) {
+	            System.out.println("No unsubmitted timesheets found. No reminder emails sent.");
+	            return;
+	        }
 
-	          OurUsers supervisor;
-	          try {
-	              supervisor = usersRepo.findByRole("supervisor");
-	              if (supervisor == null) {
-	                  System.err.println("No supervisor found in the system.");
-	                  return;
-	              }
-	          } catch (Exception e) {
-	              System.err.println("Failed to fetch supervisor details: " + e.getMessage());
-	              return;
-	          }
+	        String subject = getReminderSubject(reminder.getLevel());
 
-	          System.out.println("Preparing email for supervisor: " + supervisor.getName() + " (Email: " + supervisor.getEmail() + ")");
+	        StringBuilder body = new StringBuilder();
+	        body.append("Dear Supervisor Team,\n\n");
+	        body.append("The following employees have not submitted their timesheets for the week starting ")
+	            .append(currentWeekStart).append(":\n\n");
 
-	          StringBuilder supervisorBody = new StringBuilder();
-	          supervisorBody.append("Dear ").append(supervisor.getName()).append(",\n\n");
-	          supervisorBody.append("The following employees have not submitted their timesheets for the week starting ")
-	                        .append(currentWeekStart).append(":\n\n");
+	        boolean hasUnsubmitted = false;
 
-	          boolean hasUnsubmitted = false;
+	        for (Timesheet ts : draftTimesheets) {
+	            try {
+	                OurUsers employee = usersRepo.findByEmpId(ts.getEmpId());
+	                if (employee == null) {
+	                    System.err.println("No employee found with empId: " + ts.getEmpId());
+	                    continue;
+	                }
 
-	          for (Timesheet ts : draftTimesheets) {
-	              try {
-	                  OurUsers employee = usersRepo.findByEmpId(ts.getEmpId());
-	                  if (employee == null) {
-	                      System.err.println("No employee found with empId: " + ts.getEmpId());
-	                      continue;
-	                  }
+	                body.append(" - ").append(employee.getName())
+	                    .append(" (Timesheet ID: ").append(ts.getTimesheetId()).append(")\n");
+	                hasUnsubmitted = true;
 
-	                  supervisorBody.append(" - ").append(employee.getName())
-	                                .append(" (Timesheet ID: ").append(ts.getTimesheetId()).append(")\n");
-	                  hasUnsubmitted = true;
+	            } catch (Exception e) {
+	                System.err.println("Error processing timesheet ID " + ts.getTimesheetId() + ": " + e.getMessage());
+	                e.printStackTrace();
+	            }
+	        }
 
-	              } catch (Exception e) {
-	                  System.err.println("Error processing timesheet ID " + ts.getTimesheetId() + ": " + e.getMessage());
-	                  e.printStackTrace();
-	              }
-	          }
+	        if (hasUnsubmitted) {
+	            body.append("\nKindly follow up with them to ensure timely submission.\n\n")
+	                .append("Regards,\nTimesheet Management System");
 
-	          if (hasUnsubmitted) {
-	              supervisorBody.append("\nKindly follow up with them to ensure timely submission.\n\n")
-	                            .append("Regards,\nTimesheet Management Team");
+	            for (String recipient : reminder.getRecipients()) {
+	                mailService.sendEmail(recipient, subject, body.toString());
+	            }
 
-	              mailService.sendEmail(supervisor.getEmail(), "2nd Reminder - Timesheet Submission Still Pending", supervisorBody.toString());
-	          } else {
-	              System.out.println("No unsubmitted timesheets found. No email sent to supervisor.");
-	          }
+	            // Update lastExecutedAt
+	            reminder.setLastExecutedAt(LocalDateTime.now());
+	            supervisorReminderRepo.save(reminder);
 
-	      } catch (Exception e) {
-	          System.err.println("Exception in scheduled reminder task: " + e.getMessage());
-	          e.printStackTrace();
-	      }
-	  
-		
+	            System.out.println("Reminder email sent to supervisor recipients.");
+	        }
+
+	    } catch (Exception e) {
+	        System.err.println("Exception during Supervisor reminder execution: " + e.getMessage());
+	        e.printStackTrace();
+	    }
 	}
+
 
 	@Override	
 	public void runHrReminder(HrReminder reminder) {
