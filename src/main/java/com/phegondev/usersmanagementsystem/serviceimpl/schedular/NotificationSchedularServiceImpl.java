@@ -377,10 +377,17 @@ public class NotificationSchedularServiceImpl implements NotificationSchedularSe
 	}
 	
 	private String getReminderSubjectForApproval(ReminderLevel level) {
-	    if (level == ReminderLevel.LEVEL_1) {
-	        return "1st Reminder - Timesheet Approval Pending";
-	    } else {
-	        return "2nd Reminder - Timesheet Approval Still Pending";
+		
+	    switch (level) {
+        case LEVEL_1:
+            return "1st Reminder - Timesheet Approval Pending";
+        case LEVEL_2:
+            return "2nd Reminder - Timesheet Approval Still Pending";
+        case LEVEL_3:
+            return "3rd Reminder - Timesheet Approval Still Pending";
+        default:
+            return "Reminder - Timesheet Approval Pending";
+    
 	    }
 	}
 
