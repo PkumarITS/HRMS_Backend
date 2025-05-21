@@ -50,23 +50,21 @@ public class EmployeeController {
         }
     }
 
-
     @GetMapping("/search")
-public ResponseEntity<?> searchEmployees(@RequestParam String query) {
-    try {
-        List<Map<String, String>> employees = employeeService.searchEmployees(query);
-        return ResponseEntity.ok(Map.of(
-            "status", "success",
-            "data", employees
-        ));
-    } catch (Exception e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .body(Map.of(
-                "status", "error",
-                "message", "Failed to search employees: " + e.getMessage()
-            ));
+    public ResponseEntity<?> searchEmployees(@RequestParam String query) {
+        try {
+            List<Map<String, String>> employees = employeeService.searchEmployees(query);
+            return ResponseEntity.ok(Map.of(
+                    "status", "success",
+                    "data", employees));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of(
+                            "status", "error",
+                            "message", "Failed to search employees: " + e.getMessage()));
+        }
     }
-}
+
     @GetMapping("/all")
     public ResponseEntity<?> getAllEmployees() {
         try {
@@ -82,19 +80,20 @@ public ResponseEntity<?> searchEmployees(@RequestParam String query) {
 
     // @GetMapping("/all-employees")
     // public ResponseEntity<?> getAllEmployeesBasicInfo() {
-    //     try {
-    //         List<Map<String, String>> employees = employeeService.getAllEmployeesBasicInfo();
-    //         return ResponseEntity.ok(Map.of(
-    //             "status", "success",
-    //             "data", employees
-    //         ));
-    //     } catch (Exception e) {
-    //         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-    //             .body(Map.of(
-    //                 "status", "error",
-    //                 "message", "Failed to fetch employees: " + e.getMessage()
-    //             ));
-    //     }
+    // try {
+    // List<Map<String, String>> employees =
+    // employeeService.getAllEmployeesBasicInfo();
+    // return ResponseEntity.ok(Map.of(
+    // "status", "success",
+    // "data", employees
+    // ));
+    // } catch (Exception e) {
+    // return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+    // .body(Map.of(
+    // "status", "error",
+    // "message", "Failed to fetch employees: " + e.getMessage()
+    // ));
+    // }
     // }
     @GetMapping("/{id}")
     public ResponseEntity<?> getEmployeeById(@PathVariable Long id) {
@@ -168,6 +167,15 @@ public ResponseEntity<?> searchEmployees(@RequestParam String query) {
                     } else {
                         existingEmployee.getIdentification()
                                 .setImmigrationStatus(employeeDetails.getIdentification().getImmigrationStatus());
+                        existingEmployee.getIdentification()
+                                .setPanCardNumber(employeeDetails.getIdentification().getPanCardNumber());
+                        existingEmployee.getIdentification()
+                                .setAddressProof(employeeDetails.getIdentification().getAddressProof());
+                        existingEmployee.getIdentification()
+                                .setAddressDocumentName(employeeDetails.getIdentification().getAddressDocumentName());
+                        existingEmployee.getIdentification()
+                                .setAddressDocumentNumber(
+                                        employeeDetails.getIdentification().getAddressDocumentNumber());
                         existingEmployee.getIdentification()
                                 .setPersonalTaxId(employeeDetails.getIdentification().getPersonalTaxId());
                         existingEmployee.getIdentification()
@@ -312,6 +320,22 @@ public ResponseEntity<?> searchEmployees(@RequestParam String query) {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("status", "error", "message", "Failed to fetch employee: " + e.getMessage()));
+        }
+    }
+
+    @GetMapping("/next-emp-id")
+    @PreAuthorize("hasAuthority('admin')")
+    public ResponseEntity<?> getNextEmpId() {
+        try {
+            String nextEmpId = employeeService.generateNextEmpId();
+            return ResponseEntity.ok(Map.of(
+                    "status", "success",
+                    "data", nextEmpId));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of(
+                            "status", "error",
+                            "message", "Failed to generate employee ID: " + e.getMessage()));
         }
     }
 
