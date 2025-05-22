@@ -1,7 +1,5 @@
 package com.phegondev.usersmanagementsystem.entity;
 
-
-
 import jakarta.persistence.*;
 import java.util.Date;
 import java.util.List;
@@ -43,6 +41,29 @@ public class Project {
 
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Assignment> assignments;
+
+ 
+    @Column(name = "manager_id")
+    private String managerId;
+
+    @Column(name = "manager_name")
+    private String managerName;
+
+    public String getManagerId() {
+        return managerId;
+    }
+
+    public void setManagerId(String managerId) {
+        this.managerId = managerId;
+    }
+
+    public String getManagerName() {
+        return managerName;
+    }
+
+    public void setManagerName(String managerName) {
+        this.managerName = managerName;
+    }
 
     // Getters and Setters
     public Long getId() {
@@ -141,13 +162,12 @@ public class Project {
         this.assignments = assignments;
     }
 
-	@Override
-	public String toString() {
-		return "Project [id=" + id + ", name=" + name + ", category=" + category + ", startDate=" + startDate
-				+ ", endDate=" + endDate + ", notification=" + notification + ", priority=" + priority + ", budget="
-				+ budget + ", description=" + description + ", status=" + status + ", progress=" + progress
-				+ ", assignments=" + assignments + "]";
-	}
-    
-    
+    @Override
+    public String toString() {
+        return "Project [id=" + id + ", name=" + name + ", category=" + category + ", startDate=" + startDate
+                + ", endDate=" + endDate + ", notification=" + notification + ", priority=" + priority + ", budget="
+                + budget + ", description=" + description + ", status=" + status + ", progress=" + progress
+                + ", assignments=" + assignments + "]";
+    }
+
 }
