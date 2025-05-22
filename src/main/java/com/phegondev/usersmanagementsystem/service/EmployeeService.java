@@ -107,4 +107,20 @@ public class EmployeeService {
     public Optional<Employee> getEmployeeByEmpId(String empId) {
         return employeeRepository.findByPersonalEmpId(empId);
     }
+
+    public String generateNextEmpId() {
+    List<String> existingIds = employeeRepository.findAllEmployeeIds();
+    if (existingIds.isEmpty()) {
+        return "EMP001";
+    }
+    
+    // Extract the highest number and increment
+    int maxNumber = existingIds.stream()
+        .map(id -> id.replace("EMP", ""))
+        .mapToInt(Integer::parseInt)
+        .max()
+        .orElse(0);
+    
+    return String.format("EMP%03d", maxNumber + 1);
+    }
 }

@@ -1,5 +1,7 @@
 package com.phegondev.usersmanagementsystem.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import com.phegondev.usersmanagementsystem.dto.ReqRes;
 import com.phegondev.usersmanagementsystem.entity.OurUsers;
 import com.phegondev.usersmanagementsystem.service.UsersManagementService;
+import com.phegondev.usersmanagementsystem.repository.UsersRepo;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:5173")
@@ -18,6 +21,10 @@ public class UserManagementController {
     @Autowired
     private UsersManagementService usersManagementService;
 
+    @Autowired
+    private UsersRepo usersRepo;
+
+    // Register
     // Register
     @PostMapping("/admin/register")
     @PreAuthorize("hasAuthority('admin')")
@@ -63,7 +70,7 @@ public class UserManagementController {
 
     // Get the profile
     @GetMapping("/common/get-profile")
-    @PreAuthorize("hasAnyAuthority('admin', 'user')")
+    // @PreAuthorize("hasAnyAuthority('admin', 'user')")
     public ResponseEntity<ReqRes> getMyProfile() {
 
         // Get the Authentication object for the current user
@@ -81,21 +88,24 @@ public class UserManagementController {
         return ResponseEntity.ok(usersManagementService.deleteUser(userId));
     }
 
-    
     @GetMapping("/common/get-complete-profile")
-    @PreAuthorize("hasAnyAuthority('admin', 'user')")
+    // @PreAuthorize("hasAnyAuthority('admin', 'user')")
     public ResponseEntity<ReqRes> getCompleteProfile() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
         System.out.println("Authenticated user email: " + email);
-       
+
         OurUsers user = (OurUsers) authentication.getPrincipal();
         System.out.println("Authenticated user : " + user);
-    
 
         ReqRes response = usersManagementService.getCompleteProfile(email);
         System.out.println("Final response: " + response);
         return ResponseEntity.status(response.getStatusCode()).body(response);
     }
 
+    @GetMapping("/admin/managers")
+    public ResponseEntity<List<OurUsers>> getAllManagers() {
+        List<OurUsers> managers = usersRepo.findAllByRole("manager");
+        return ResponseEntity.ok(managers);
+    }
 }

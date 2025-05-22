@@ -26,11 +26,14 @@ public class ProjectController {
     @GetMapping("/admin/projects")
     public ResponseEntity<List<ProjectDTO>> getAllProjects(
             @RequestParam(required = false) String status,
-            @RequestParam(required = false) String search) {
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) String managerId) { // Add managerId parameter
     
         List<Project> projects;
     
-        if (status != null && !status.isEmpty()) {
+        if (managerId != null && !managerId.isEmpty()) {
+            projects = projectService.getProjectsByManagerId(managerId);
+        } else if (status != null && !status.isEmpty()) {
             projects = projectService.getProjectsByStatus(status);
         } else if (search != null && !search.isEmpty()) {
             projects = projectService.searchProjectsByName(search);
@@ -38,7 +41,7 @@ public class ProjectController {
             projects = projectService.getAllProjects();
         }
     
-        // ✅ Convert to ProjectDTO with embedded AssignmentDTOs
+        // Convert to ProjectDTO with embedded AssignmentDTOs
         List<ProjectDTO> projectDTOs = projects.stream().map(project -> {
             ProjectDTO dto = new ProjectDTO();
             dto.setId(project.getId());
@@ -52,6 +55,8 @@ public class ProjectController {
             dto.setDescription(project.getDescription());
             dto.setStatus(project.getStatus());
             dto.setProgress(project.getProgress());
+            dto.setManagerId(project.getManagerId());
+            dto.setManagerName(project.getManagerName());
     
             // Convert Assignments
             List<com.phegondev.usersmanagementsystem.dto.AssignmentDTO> assignmentDTOs =

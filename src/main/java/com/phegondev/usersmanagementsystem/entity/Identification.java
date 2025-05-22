@@ -15,6 +15,18 @@ public class Identification {
     @NotBlank(message = "Immigration status is required")
     private String immigrationStatus;
 
+	@NotBlank(message = "PAN Card number is required")
+    @Pattern(regexp = "^[A-Z]{5}[0-9]{4}[A-Z]{1}$", message = "PAN Card must be in format AAAAA9999A")
+    private String panCardNumber;
+
+	@NotBlank(message = "Address Proof is required")
+    private String addressProof;
+
+    private String addressDocumentName;
+
+    @NotBlank(message = "Address document number is required")
+    private String addressDocumentNumber;
+
     @Pattern(regexp = "^$|^\\d{10}$", message = "Personal Tax ID must be 10 digits if provided")
     private String personalTaxId;
 
@@ -47,6 +59,15 @@ public class Identification {
 	public void setImmigrationStatus(String immigrationStatus) {
 		this.immigrationStatus = immigrationStatus;
 	}
+
+	public String getPanCardNumber() {
+        return panCardNumber;
+    }
+
+    public void setPanCardNumber(String panCardNumber) {
+        this.panCardNumber = panCardNumber;
+    }
+
 
 	public String getPersonalTaxId() {
 		return personalTaxId;
@@ -87,6 +108,30 @@ public class Identification {
 	public void setDocumentNumber(String documentNumber) {
 		this.documentNumber = documentNumber;
 	}
+
+	public String getAddressProof() {
+        return addressProof;
+    }
+
+    public void setAddressProof(String addressProof) {
+        this.addressProof = addressProof;
+    }
+
+    public String getAddressDocumentName() {
+        return addressDocumentName;
+    }
+
+    public void setAddressDocumentName(String addressDocumentName) {
+        this.addressDocumentName = addressDocumentName;
+    }
+
+    public String getAddressDocumentNumber() {
+        return addressDocumentNumber;
+    }
+
+    public void setAddressDocumentNumber(String addressDocumentNumber) {
+        this.addressDocumentNumber = addressDocumentNumber;
+    }
 
 	public Employee getEmployee() {
 		return employee;

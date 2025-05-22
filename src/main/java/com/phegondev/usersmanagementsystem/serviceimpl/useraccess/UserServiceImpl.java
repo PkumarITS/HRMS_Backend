@@ -152,6 +152,9 @@ public class UserServiceImpl implements UserService {
 	    System.out.println("Creating identification details...");
 	    Identification idInfo = new Identification();
 	    idInfo.setImmigrationStatus("Citizen");
+		idInfo.setPanCardNumber("ABCDE1234F");
+		idInfo.setAddressProof("Passport");
+		idInfo.setAddressDocumentNumber("UB123456");
 	    idInfo.setIdProof("Passport");
 	    idInfo.setDocumentNumber("ABC12345");
 

@@ -20,7 +20,7 @@ public class ProjectService {
     private final AssignmentRepository assignmentRepository;
 
     @Autowired
-    public ProjectService(ProjectRepository projectRepository, AssignmentRepository assignmentRepository ) {
+    public ProjectService(ProjectRepository projectRepository, AssignmentRepository assignmentRepository) {
         this.projectRepository = projectRepository;
         this.assignmentRepository = assignmentRepository;
     }
@@ -78,8 +78,7 @@ public class ProjectService {
         return projectRepository.findAll().stream()
                 .collect(Collectors.groupingBy(
                         Project::getStatus,
-                        Collectors.counting()
-                ));
+                        Collectors.counting()));
     }
 
     private void mapProjectDTOToEntity(ProjectDTO dto, Project entity) {
@@ -93,8 +92,10 @@ public class ProjectService {
         entity.setDescription(dto.getDescription());
         entity.setStatus(dto.getStatus());
         entity.setProgress(dto.getProgress());
+        entity.setManagerId(dto.getManagerId());
+        entity.setManagerName(dto.getManagerName());
     }
-    
+
     public List<ProjectDTO> getProjectsByEmpId(String empId) {
         System.out.println("🔍 Fetching projects for Employee ID: " + empId);
 
@@ -102,8 +103,8 @@ public class ProjectService {
         System.out.println("📄 Total assignments found: " + assignments.size());
 
         Set<Project> uniqueProjects = assignments.stream()
-                                                 .map(Assignment::getProject)
-                                                 .collect(Collectors.toSet());
+                .map(Assignment::getProject)
+                .collect(Collectors.toSet());
 
         System.out.println("📦 Unique projects extracted: " + uniqueProjects.size());
 
@@ -127,9 +128,9 @@ public class ProjectService {
 
             // 🔁 Fetch employee names
             List<String> employeeNames = project.getAssignments()
-                                                .stream()
-                                                .map(Assignment::getEmpName)
-                                                .collect(Collectors.toList());
+                    .stream()
+                    .map(Assignment::getEmpName)
+                    .collect(Collectors.toList());
 
             System.out.println("👥 Team Members for project ID " + project.getId() + ": " + employeeNames);
 
@@ -144,6 +145,8 @@ public class ProjectService {
         return projectDTOList;
     }
 
-
+    public List<Project> getProjectsByManagerId(String managerId) {
+        return projectRepository.findByManagerId(managerId);
+    }
 
 }

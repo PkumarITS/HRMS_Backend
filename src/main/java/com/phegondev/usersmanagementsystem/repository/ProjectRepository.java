@@ -7,4 +7,6 @@ import java.util.List;
 public interface ProjectRepository extends JpaRepository<Project, Long> {
     List<Project> findByStatus(String status);
     List<Project> findByNameContainingIgnoreCase(String name);
+    
+    List<Project> findByManagerId(String managerId);
 }
