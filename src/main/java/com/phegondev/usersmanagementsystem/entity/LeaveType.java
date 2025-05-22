@@ -1,7 +1,10 @@
 package com.phegondev.usersmanagementsystem.entity;
 
 import jakarta.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -14,17 +17,27 @@ public class LeaveType {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name", nullable = false, unique = true)
+    @Column(nullable = false)
     private String name;
 
-    @Column(name = "description", columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT")
     private String description;
 
     @Column(name = "default_days", nullable = false)
-    private int defaultDays;
+    private double defaultDays; // Changed from int to double
 
-    @Column(name = "is_active", nullable = false)
-    private boolean isActive = true;
+  //  @Column(name = "is_active", nullable = false)
+   // private boolean isActive = true;
+
+    @Column(name = "start_date")
+    private LocalDate startDate;
+
+    @Column(name = "end_date")
+    private LocalDate endDate;
+
+
+    @Column(name = "leave_carried_forward", nullable = false)
+    private boolean leaveCarriedForward = false;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -33,6 +46,14 @@ public class LeaveType {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+    
+    @ElementCollection
+    @CollectionTable(name = "leave_type_employee_ids", joinColumns = @JoinColumn(name = "leave_type_id"))
+    @Column(name = "employee_id")
+    private Set<String> employeeIds = new HashSet<>();
+    
+    @Column(name = "apply_to_all_employees", nullable = false)
+    private boolean applyToAllEmployees = false;
 
 	public Long getId() {
 		return id;
@@ -58,20 +79,36 @@ public class LeaveType {
 		this.description = description;
 	}
 
-	public int getDefaultDays() {
+	public double getDefaultDays() {
 		return defaultDays;
 	}
 
-	public void setDefaultDays(int defaultDays) {
+	public void setDefaultDays(double defaultDays) {
 		this.defaultDays = defaultDays;
 	}
 
-	public boolean isActive() {
-		return isActive;
+	public LocalDate getStartDate() {
+		return startDate;
 	}
 
-	public void setActive(boolean isActive) {
-		this.isActive = isActive;
+	public void setStartDate(LocalDate startDate) {
+		this.startDate = startDate;
+	}
+
+	public LocalDate getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(LocalDate endDate) {
+		this.endDate = endDate;
+	}
+
+	public boolean isLeaveCarriedForward() {
+		return leaveCarriedForward;
+	}
+
+	public void setLeaveCarriedForward(boolean leaveCarriedForward) {
+		this.leaveCarriedForward = leaveCarriedForward;
 	}
 
 	public LocalDateTime getCreatedAt() {
@@ -90,15 +127,37 @@ public class LeaveType {
 		this.updatedAt = updatedAt;
 	}
 
-	@Override
-	public String toString() {
-		return "LeaveType [id=" + id + ", name=" + name + ", description=" + description + ", defaultDays="
-				+ defaultDays + ", isActive=" + isActive + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt
-				+ "]";
+	public Set<String> getEmployeeIds() {
+		return employeeIds;
+	}
+
+	public void setEmployeeIds(Set<String> employeeIds) {
+		this.employeeIds = employeeIds;
 	}
 	
 	
-    
-    
 
+	public boolean isApplyToAllEmployees() {
+		return applyToAllEmployees;
+	}
+
+	public void setApplyToAllEmployees(boolean applyToAllEmployees) {
+		this.applyToAllEmployees = applyToAllEmployees;
+	}
+
+	@Override
+	public String toString() {
+		return "LeaveType [id=" + id + ", name=" + name + ", description=" + description + ", defaultDays="
+				+ defaultDays + ", startDate=" + startDate + ", endDate=" + endDate + ", leaveCarriedForward="
+				+ leaveCarriedForward + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + ", employeeIds="
+				+ employeeIds + ", applyToAllEmployees=" + applyToAllEmployees + "]";
+	}
+
+    
+ 
+	
+	
+
+    
+    
 }

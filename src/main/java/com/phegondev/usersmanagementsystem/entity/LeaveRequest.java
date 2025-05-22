@@ -98,6 +98,10 @@ public class LeaveRequest {
 
     @Column(name = "leave_type", nullable = false)
     private String leaveType;
+    
+    @Column(name = "leave_type_id", nullable = false)
+    private Long leaveTypeId;
+
 
     @Column(name = "from_date", nullable = false)
     private LocalDate fromDate;
@@ -109,7 +113,7 @@ public class LeaveRequest {
     private String reason;
 
     @Column(name = "status", nullable = false)
-    private String status = "Pending";
+    private String status = "PENDING";
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();

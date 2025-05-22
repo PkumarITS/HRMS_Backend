@@ -47,11 +47,19 @@
 
 package com.phegondev.usersmanagementsystem.service;
 
+import com.phegondev.usersmanagementsystem.dto.LeaveRequestDTO;
+import com.phegondev.usersmanagementsystem.entity.EmployeeLeaveBalance;
 import com.phegondev.usersmanagementsystem.entity.LeaveRequest;
+import com.phegondev.usersmanagementsystem.entity.LeaveType;
+import com.phegondev.usersmanagementsystem.repository.EmployeeLeaveBalanceRepo;
 import com.phegondev.usersmanagementsystem.repository.LeaveRequestRepository;
+import com.phegondev.usersmanagementsystem.repository.LeaveTypeRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
@@ -60,6 +68,12 @@ public class LeaveRequestService {
 
     @Autowired
     private LeaveRequestRepository repository;
+    
+    @Autowired
+    private LeaveTypeRepository  leaveTypeRepo;
+    
+    @Autowired
+    private EmployeeLeaveBalanceRepo employeeLeaveBalanceRepo;
 
     // Convert status to Title Case (e.g., "PENDING" → "Pending")
     private String formatStatus(String status) {
@@ -76,14 +90,163 @@ public class LeaveRequestService {
 
     // Save a new or updated leave request
     // Save a new or updated leave request
-    public LeaveRequest save(LeaveRequest request) {
-        if (request.getToDate().isBefore(request.getFromDate())) {
+    public LeaveRequest save(LeaveRequestDTO dto) {
+        System.out.println("[INFO] Starting save process for leave request of employee: " + dto.getEmployeeId());
+
+        // 1. Validate date range
+        if (dto.getFromDate() != null && dto.getFromDate().isBefore(LocalDate.now())) {
+            System.out.println("[ERROR] Start date is in the past: " + dto.getFromDate());
+            throw new IllegalArgumentException("Start date cannot be in the past.");
+        }
+
+        if (dto.getToDate().isBefore(dto.getFromDate())) {
+            System.out.println("[ERROR] To date is before from date.");
             throw new IllegalArgumentException("To date cannot be before From date.");
         }
- 
-        request.setStatus(formatStatus(request.getStatus()));
-        return repository.save(request);
+
+        long daysRequested = ChronoUnit.DAYS.between(dto.getFromDate(), dto.getToDate()) + 1;
+        System.out.println("[INFO] Leave days requested: " + daysRequested);
+
+        // 2. Find LeaveType
+        LeaveType leaveType = leaveTypeRepo.findById(dto.getLeaveTypeId())
+                .orElseThrow(() -> {
+                    System.out.println("[ERROR] Invalid leave type ID: " + dto.getLeaveTypeId());
+                    return new IllegalArgumentException("Invalid leave type ID.");
+                });
+        System.out.println("[INFO] Found leave type: " + leaveType.getName());
+
+        // 3. Check existing balance
+        Optional<EmployeeLeaveBalance> balanceOpt = employeeLeaveBalanceRepo
+                .findByEmployeeIdAndLeaveTypeId(dto.getEmployeeId(), dto.getLeaveTypeId());
+
+        EmployeeLeaveBalance balance = balanceOpt.orElseGet(() -> {
+            System.out.println("[INFO] No existing leave balance found, creating new...");
+            if (leaveType.getDefaultDays() < daysRequested) {
+                System.out.println("[ERROR] Insufficient leave balance for new entry.");
+                throw new IllegalStateException("Insufficient leave balance for new entry.");
+            }
+            EmployeeLeaveBalance newBalance = new EmployeeLeaveBalance();
+            newBalance.setEmployeeId(dto.getEmployeeId());
+            newBalance.setLeaveType(leaveType.getName());
+            newBalance.setLeaveTypeId(leaveType.getId());
+            newBalance.setRemainingDays((float) (leaveType.getDefaultDays() - daysRequested));
+            System.out.println("[INFO] New leave balance created with days: " + newBalance.getRemainingDays());
+            return newBalance;
+        });
+
+        // 4. If balance existed, ensure there's enough leave
+        if (balanceOpt.isPresent()) {
+            System.out.println("[INFO] Existing leave balance found: " + balance.getRemainingDays());
+            if (balance.getRemainingDays() < daysRequested) {
+                System.out.println("[ERROR] Insufficient balance: Requested = " + daysRequested +
+                                   ", Available = " + balance.getRemainingDays());
+                throw new IllegalStateException("Insufficient leave balance.");
+            }
+            balance.setRemainingDays(balance.getRemainingDays() - daysRequested);
+            System.out.println("[INFO] Deducted days. New balance: " + balance.getRemainingDays());
+        }
+
+        // 5. Save updated or new balance
+        employeeLeaveBalanceRepo.save(balance);
+        System.out.println("[INFO] Leave balance saved/updated successfully.");
+
+        // 6. Convert DTO to Entity and save leave request
+        LeaveRequest request = convertToLeaveRequestEntity(dto);
+        LeaveRequest savedRequest = repository.save(request);
+        System.out.println("[INFO] Leave request saved with ID: " + savedRequest.getId());
+
+        return savedRequest;
     }
+
+    
+    private LeaveRequest convertToLeaveRequestEntity(LeaveRequestDTO dto) {
+        System.out.println("[INFO] Converting DTO to LeaveRequest entity...");
+
+        LeaveRequest request = new LeaveRequest();
+        request.setEmployeeId(dto.getEmployeeId());
+        request.setEmployeeName(dto.getEmployeeName());
+        request.setLeaveType(dto.getLeaveType()); // Should be human-readable name (could be dto.getLeaveTypeName())
+        request.setFromDate(dto.getFromDate());
+        request.setToDate(dto.getToDate());
+        request.setReason(dto.getReason());
+        request.setLeaveTypeId(dto.getLeaveTypeId());
+      
+
+        System.out.println("[INFO] Conversion complete for employee: " + dto.getEmployeeId());
+        return request;
+    }
+    
+ 
+    public LeaveRequest updateLeaveRequestStatus(Long requestId, String newStatus) {
+        System.out.println("[INFO] Updating leave request status. ID: " + requestId + ", New Status: " + newStatus);
+
+        LeaveRequest request = repository.findById(requestId)
+            .orElseThrow(() -> {
+                System.out.println("[ERROR] Leave request not found: " + requestId);
+                return new IllegalArgumentException("Leave request not found.");
+            });
+
+        String oldStatus = request.getStatus();
+        System.out.println("[INFO] Current status: " + oldStatus + ", Requested new status: " + newStatus);
+
+        if (oldStatus.equals(newStatus)) {
+            System.out.println("[INFO] Status is already " + newStatus + ". No changes needed.");
+            return request;
+        }
+
+        long daysRequested = ChronoUnit.DAYS.between(request.getFromDate(), request.getToDate()) + 1;
+
+        // Fetch employee leave balance
+        Optional<EmployeeLeaveBalance> balanceOpt = employeeLeaveBalanceRepo
+                .findByEmployeeIdAndLeaveTypeId(request.getEmployeeId(), request.getLeaveTypeId());
+
+        if (!balanceOpt.isPresent()) {
+            System.out.println("[ERROR] Leave balance not found for employee and leave type.");
+            throw new IllegalStateException("Leave balance not found.");
+        }
+
+        EmployeeLeaveBalance balance = balanceOpt.get();
+
+        // Adjust balance based on status transition
+        if (oldStatus.equals("REJECTED") && newStatus.equals("APPROVED")) {
+            if (balance.getRemainingDays() < daysRequested) {
+                System.out.println("[ERROR] Insufficient leave balance for approval.");
+                throw new IllegalStateException("Insufficient leave balance to approve this request.");
+            }
+            balance.setRemainingDays(balance.getRemainingDays() - daysRequested);
+            System.out.println("[INFO] Approved request after rejection. Deducted " + daysRequested + " days.");
+        }   else  if (oldStatus.equals("REJECTED") && newStatus.equals("PENDING")) {
+            if (balance.getRemainingDays() < daysRequested) {
+                System.out.println("[ERROR] Insufficient leave balance for pending.");
+                throw new IllegalStateException("Insufficient leave balance to pending this request.");
+            }
+            balance.setRemainingDays(balance.getRemainingDays() - daysRequested);
+            System.out.println("[INFO] Pending request after rejection. Deducted " + daysRequested + " days.");
+        }else if (oldStatus.equals("APPROVED") && newStatus.equals("REJECTED")) {
+            balance.setRemainingDays(balance.getRemainingDays() + daysRequested);
+            System.out.println("[INFO] Rejected approved request. Restored " + daysRequested + " days.");
+        }else if (oldStatus.equals("PENDING") && newStatus.equals("REJECTED")) {
+            balance.setRemainingDays(balance.getRemainingDays() + daysRequested);
+            System.out.println("[INFO] Rejected pending request. Restored " + daysRequested + " days.");
+        } else {
+            System.out.println("[INFO] No balance adjustment needed.");
+        }
+
+        // Save updated balance
+        employeeLeaveBalanceRepo.save(balance);
+
+        // Update request status
+        request.setStatus(newStatus);
+        LeaveRequest updatedRequest = repository.save(request);
+        System.out.println("[INFO] Leave request status updated successfully.");
+
+        return updatedRequest;
+    }
+
+
+
+
+    
 
     // Update only the status of a leave request
     public Optional<LeaveRequest> updateStatus(Long id, String status) {

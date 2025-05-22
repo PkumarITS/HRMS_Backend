@@ -1,6 +1,8 @@
 
 package com.phegondev.usersmanagementsystem.controller;
 
+import com.phegondev.usersmanagementsystem.dto.EmployeeLeaveBalanceDTO;
+import com.phegondev.usersmanagementsystem.dto.LeaveRequestDTO;
 import com.phegondev.usersmanagementsystem.entity.LeaveRequest;
 import com.phegondev.usersmanagementsystem.entity.LeaveType;
 import com.phegondev.usersmanagementsystem.entity.OurUsers;
@@ -21,7 +23,7 @@ import java.util.Optional;
 @RestController
 // @PreAuthorize("hasAnyAuthority('admin', 'user')")
 // @RequestMapping("/adminuser/leaves")
-@CrossOrigin(origins = "http://localhost:5173")
+//@CrossOrigin(origins = "http://localhost:5173")
 public class LeaveRequestController {
 
 	private final LeaveBalanceService leaveBalanceService;
@@ -54,12 +56,8 @@ public class LeaveRequestController {
 
 	// Create a new leave request
 	@PostMapping("/user/leaves/add")
-	public ResponseEntity<LeaveRequest> createLeaveRequest(@RequestBody LeaveRequest request) {
-		// Backend validation to reject past dates
-		if (request.getStartDate() != null && request.getStartDate().isBefore(java.time.LocalDate.now())) {
-			return ResponseEntity.badRequest().body(null); // Reject if start date is in the past
-		}
-		return ResponseEntity.ok(service.save(request));
+	public ResponseEntity<LeaveRequest> createLeaveRequest(@RequestBody LeaveRequestDTO dto) {	
+		return ResponseEntity.ok(service.save(dto));
 	}
 
 	// Update the status of a leave request by ID
@@ -72,7 +70,7 @@ public class LeaveRequestController {
 	// .orElse(ResponseEntity.notFound().build());
 	// }
 
-	@PutMapping("/admin/leaves/{id}/status")
+//	@PutMapping("/admin/leaves/{id}/status")
 	public ResponseEntity<LeaveRequest> updateStatus(
 			@PathVariable Long id,
 			@RequestParam String status) {
@@ -86,6 +84,18 @@ public class LeaveRequestController {
 				.map(ResponseEntity::ok)
 				.orElse(ResponseEntity.notFound().build());
 	}
+	
+    @PutMapping("/admin/leaves/{id}/status")
+    public ResponseEntity<LeaveRequest> updateLeaveRequestStatus(
+            @PathVariable("id") Long requestId,
+            @RequestParam("status") String newStatus) {
+        try {
+            LeaveRequest updatedRequest = service.updateLeaveRequestStatus(requestId, newStatus.toUpperCase());
+            return ResponseEntity.ok(updatedRequest);
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
 
 	// Delete a leave request by ID
 	// @DeleteMapping("/{id}")
@@ -140,11 +150,26 @@ public class LeaveRequestController {
 	}
 	
 	
+	//leaves-types controller
+	
+    @GetMapping("/my-leave-types")
+    public ResponseEntity<List<EmployeeLeaveBalanceDTO>> getMyApplicableLeaveTypes() {
+        String employeeId = getCurrentEmployeeId(); // e.g., from JWT or SecurityContext
+        System.out.println("[GET] Fetching leave types for current employeeId: " + employeeId);
+        List<EmployeeLeaveBalanceDTO> applicableLeaveTypes = leaveTypeService.getLeaveBalancesForEmployee(employeeId);
+        return ResponseEntity.ok(applicableLeaveTypes);
+    }
 	
 	
 	
-	
-	
+    private String getCurrentEmployeeId() {
+  	  Authentication authentication = SecurityContextHolder.getContext().getAuthentication();      
+        
+        OurUsers user = (OurUsers) authentication.getPrincipal();
+        String empId = user.getEmpId();
+        System.out.println(" user emp id: " + user.getEmpId());
+        return empId;
+  }
 	
 	
 	
