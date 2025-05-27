@@ -30,7 +30,6 @@ import com.phegondev.usersmanagementsystem.service.MailService;
 import com.phegondev.usersmanagementsystem.service.TimesheetService;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:5173")
 public class TimesheetController {
 
 	private final TimesheetService timesheetService;
@@ -41,7 +40,7 @@ public class TimesheetController {
 		this.mailService = mailService;
 	}
 
-	@PostMapping("/user/timesheet")
+	@PostMapping("/timesheet")
 	public ResponseEntity<TimesheetDTO> createTimesheet(@RequestBody TimesheetDTO dto) {
 		System.out.println("Received DTO in Controller: " + dto);
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -54,7 +53,7 @@ public class TimesheetController {
 		return ResponseEntity.ok(created);
 	}
 
-	@GetMapping("/user/timesheet/get-initial-data")
+	@GetMapping("/timesheet/get-initial-data")
 	public ResponseEntity<TimesheetInitialDataDTO> getInitialData() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		OurUsers user = (OurUsers) authentication.getPrincipal();
@@ -68,14 +67,14 @@ public class TimesheetController {
 		return ResponseEntity.ok(response);
 	}
 
-	@GetMapping("/user/timesheet/get-tasks/{projectId}")
+	@GetMapping("/timesheet/get-tasks/{projectId}")
 	public ResponseEntity<List<TaskNameIdDTO>> getTasksByProject(@PathVariable Long projectId) {
 		System.out.println("🎯 API call received for projectId: " + projectId);
 		List<TaskNameIdDTO> taskList = timesheetService.getTasksByProjectId(projectId);
 		return ResponseEntity.ok(taskList);
 	}
 
-	@PutMapping("/user/timesheet/{timesheetId}")
+	@PutMapping("/timesheet/{timesheetId}")
 	public ResponseEntity<TimesheetDTO> updateTimesheet(
 			@PathVariable String timesheetId,
 			@RequestBody TimesheetDTO dto) {
@@ -89,7 +88,7 @@ public class TimesheetController {
 		return ResponseEntity.ok(updated);
 	}
 
-	@GetMapping("/user/timesheet/{timesheetId}")
+	@GetMapping("/timesheet/{timesheetId}")
 	public ResponseEntity<TimesheetDTO> getTimesheetById(@PathVariable String timesheetId) {
 		System.out.println("Fetching Timesheet for ID: " + timesheetId);
 
@@ -99,7 +98,7 @@ public class TimesheetController {
 		return ResponseEntity.ok(dto);
 	}
 
-	@GetMapping("/admin/timesheets/{timesheetId}")
+	@GetMapping("/timesheets/{timesheetId}")
 	public ResponseEntity<TimesheetDTO> getTimesheetDetailsForAdmin(@PathVariable String timesheetId) {
 		System.out.println("[Admin] Fetching details for Timesheet ID: " + timesheetId);
 		try {
@@ -117,7 +116,7 @@ public class TimesheetController {
 		}
 	}
 
-	@GetMapping("/user/timesheet/employee")
+	@GetMapping("/timesheet/employee")
 	public ResponseEntity<List<TimesheetDTO>> getTimesheetsByEmpId() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		OurUsers user = (OurUsers) authentication.getPrincipal();
@@ -130,7 +129,7 @@ public class TimesheetController {
 		return ResponseEntity.ok(timesheets);
 	}
 
-	@GetMapping("/admin/timesheets/non-draft")
+	@GetMapping("/timesheets/non-draft")
 	public ResponseEntity<List<TimesheetDTO>> getNonDraftTimesheets() {
 		System.out.println("[Controller] Fetching all non-draft timesheets...");
 
@@ -140,7 +139,7 @@ public class TimesheetController {
 		return ResponseEntity.ok(list);
 	}
 
-	@GetMapping("/user/timesheet/employee/current-week")
+	@GetMapping("/timesheet/employee/current-week")
 	public ResponseEntity<List<TimesheetDTO>> getCurrentWeekTimesheetsByEmpId() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		OurUsers user = (OurUsers) authentication.getPrincipal();
@@ -151,7 +150,7 @@ public class TimesheetController {
 	}
 
 	// put to submit all the drafts
-	@PutMapping("/user/timesheet/submit-all")
+	@PutMapping("/timesheet/submit-all")
 	public ResponseEntity<?> submitAllDraftTimesheets() {
 		try {
 			// Validate token and get employee ID
@@ -187,7 +186,7 @@ public class TimesheetController {
 	}
 
 	// Delete a timesheet by ID
-	@DeleteMapping("/user/timesheet/{id}")
+	@DeleteMapping("/timesheet/{id}")
 	public ResponseEntity<?> deleteTimesheet(@PathVariable Long id) {
 		try {
 			System.out.println("Received delete request for Timesheet ID: " + id);
@@ -205,7 +204,7 @@ public class TimesheetController {
 	}
 
 	// submits specific timesheet
-	@PutMapping("/user/timesheet/{id}/submit")
+	@PutMapping("/timesheet/{id}/submit")
 	public ResponseEntity<?> submitTimesheet(@PathVariable Long id) {
 		try {
 			TimesheetDTO updated = timesheetService.submitTimesheet(id);

@@ -15,9 +15,7 @@ import com.phegondev.usersmanagementsystem.dto.RoleReminderConfigDTO;
 import com.phegondev.usersmanagementsystem.service.RoleReminderConfigService;
 
 @RestController
-@PreAuthorize("hasAnyAuthority('admin')")
-@RequestMapping("/admin/rolereminder")
-@CrossOrigin(origins = "http://localhost:5173")
+@RequestMapping("/rolereminder")
 public class RoleReminderConfigController {
 	
 	
