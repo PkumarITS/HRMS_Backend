@@ -82,8 +82,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/admin/leave-types")
-//@CrossOrigin(origins = "http://localhost:5173")
+@RequestMapping("/leave-types")
 public class LeaveTypeController {
 
     private final LeaveTypeService leaveTypeService;
@@ -112,7 +111,6 @@ public class LeaveTypeController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAuthority('admin')")
     public ResponseEntity<LeaveType> createLeaveType(@RequestBody LeaveType leaveType) {
         System.out.println("[POST] Creating LeaveType: " + leaveType);
         LeaveType createdLeaveType = leaveTypeService.createLeaveType(leaveType);
@@ -121,7 +119,6 @@ public class LeaveTypeController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('admin')")
     public ResponseEntity<LeaveType> updateLeaveType(@PathVariable Long id,
                                                      @RequestBody LeaveType leaveType) {
         System.out.println("[PUT] Updating LeaveType ID: " + id);
@@ -139,7 +136,6 @@ public class LeaveTypeController {
 //    }
     
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('admin')")
     public ResponseEntity<Void> deleteLeaveType(@PathVariable Long id) {
         System.out.println("[DELETE] Deleting LeaveType ID: " + id); // Debug log
         leaveTypeService.deleteLeaveType(id);
@@ -147,7 +143,6 @@ public class LeaveTypeController {
     }
 
     @PatchMapping("/{id}/toggle-status")
-    @PreAuthorize("hasAuthority('admin')")
     public ResponseEntity<LeaveType> toggleLeaveTypeStatus(@PathVariable Long id) {
         return ResponseEntity.ok(leaveTypeService.toggleLeaveTypeStatus(id));
     }

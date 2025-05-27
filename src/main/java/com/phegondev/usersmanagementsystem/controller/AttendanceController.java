@@ -14,15 +14,12 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-// @RequestMapping("/adminuser/attendance")
-// @PreAuthorize("hasAnyAuthority('admin', 'user')")
-@CrossOrigin(origins = "http://localhost:5173")
 public class AttendanceController {
 
     @Autowired
     private AttendanceService service;
 
-    @PostMapping("/user/attendance/clock-in")
+    @PostMapping("/attendance/clock-in")
     public ResponseEntity<Attendance> clockIn() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         OurUsers user = (OurUsers) auth.getPrincipal();
@@ -33,7 +30,7 @@ public class AttendanceController {
     }
 
 
-    @PutMapping("/user/attendance/clock-out")
+    @PutMapping("/attendance/clock-out")
     public ResponseEntity<Attendance> clockOut() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         OurUsers user = (OurUsers) auth.getPrincipal();
@@ -44,8 +41,7 @@ public class AttendanceController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/admin/attendance/all")
-    @PreAuthorize("hasAuthority('admin')")
+    @GetMapping("/attendance/all")
     public ResponseEntity<List<Attendance>> getAll(
             @RequestParam(required = false) String employeeId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
@@ -60,23 +56,21 @@ public class AttendanceController {
         return ResponseEntity.ok(service.getAll());
     }
 
-    @GetMapping("/user/attendance/my-attendance")
+    @GetMapping("/attendance/my-attendance")
     public ResponseEntity<List<Attendance>> getMyAttendance() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         OurUsers user = (OurUsers) auth.getPrincipal();
         return ResponseEntity.ok(service.getByEmployeeId(user.getEmpId()));
     }
 
-    @GetMapping("/admin/attendance/date-range")
-    @PreAuthorize("hasAuthority('admin')")
+    @GetMapping("/attendance/date-range")
     public ResponseEntity<List<Attendance>> getByDateRange(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
         return ResponseEntity.ok(service.getByDateRange(startDate, endDate));
     }
 
-    @GetMapping("/admin/attendance/today")
-    @PreAuthorize("hasAuthority('admin')")
+    @GetMapping("/attendance/today")
     public ResponseEntity<List<Attendance>> getTodayAttendance() {
         return ResponseEntity.ok(service.getTodayAttendance());
     }

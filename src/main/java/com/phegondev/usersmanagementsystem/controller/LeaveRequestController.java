@@ -21,9 +21,6 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-// @PreAuthorize("hasAnyAuthority('admin', 'user')")
-// @RequestMapping("/adminuser/leaves")
-//@CrossOrigin(origins = "http://localhost:5173")
 public class LeaveRequestController {
 
 	private final LeaveBalanceService leaveBalanceService;
@@ -38,7 +35,7 @@ public class LeaveRequestController {
 	}
 
 	// Get all leave requests
-	@GetMapping("/admin/leaves/all")
+	@GetMapping("/leaves/all")
 	public List<LeaveRequest> getAllLeaveRequests(
 			@RequestParam(required = false) String employeeName,
 			@RequestParam(required = false) String leaveType) {
@@ -55,7 +52,7 @@ public class LeaveRequestController {
 	}
 
 	// Create a new leave request
-	@PostMapping("/user/leaves/add")
+	@PostMapping("/leaves/add")
 	public ResponseEntity<LeaveRequest> createLeaveRequest(@RequestBody LeaveRequestDTO dto) {	
 		return ResponseEntity.ok(service.save(dto));
 	}
@@ -85,7 +82,7 @@ public class LeaveRequestController {
 				.orElse(ResponseEntity.notFound().build());
 	}
 	
-    @PutMapping("/admin/leaves/{id}/status")
+    @PutMapping("/leaves/{id}/status")
     public ResponseEntity<LeaveRequest> updateLeaveRequestStatus(
             @PathVariable("id") Long requestId,
             @RequestParam("status") String newStatus) {
@@ -105,7 +102,7 @@ public class LeaveRequestController {
 	// }
 
 	// Get by employee ID
-	@GetMapping("/user/leaves")
+	@GetMapping("/leaves")
 	public ResponseEntity<List<LeaveRequest>> getLeaveRequestsByEmployeeId() {
 
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -116,22 +113,22 @@ public class LeaveRequestController {
 		return requests.isEmpty() ? ResponseEntity.notFound().build() : ResponseEntity.ok(requests);
 	}
 	
-	   @GetMapping("/leave-types")
-	    public ResponseEntity<List<LeaveType>> getAllLeaveTypes() {
-	        return ResponseEntity.ok(leaveTypeService.getAllLeaveTypes());
-	    }
+	//    @GetMapping("/leave-types")
+	//     public ResponseEntity<List<LeaveType>> getAllLeaveTypes() {
+	//         return ResponseEntity.ok(leaveTypeService.getAllLeaveTypes());
+	//     }
 
 
 	// Add these methods to LeaveRequestController.java
 
-	@GetMapping("/admin/leaves/{id}")
+	@GetMapping("/leaves/{id}")
 	public ResponseEntity<LeaveRequest> getLeaveRequestById(@PathVariable Long id) {
 		Optional<LeaveRequest> leaveRequest = service.findById(id);
 		return leaveRequest.map(ResponseEntity::ok)
 				.orElse(ResponseEntity.notFound().build());
 	}
 
-	@PutMapping("/admin/leaves/{id}")
+	@PutMapping("/leaves/{id}")
 	public ResponseEntity<LeaveRequest> updateLeaveRequest(
 			@PathVariable Long id,
 			@RequestBody LeaveRequest leaveRequest) {

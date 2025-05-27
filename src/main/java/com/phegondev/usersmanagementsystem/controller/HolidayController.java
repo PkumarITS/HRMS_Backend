@@ -9,14 +9,12 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-// @RequestMapping("/api/holidays")
-@CrossOrigin(origins = "http://localhost:5173")
 public class HolidayController {
     
     @Autowired
     private HolidayService holidayService;
     
-    @GetMapping("/adminuser/holidays")
+    @GetMapping("/holidays")
     public List<Holiday> getAllHolidays() {
         return holidayService.getAllHolidays();
     }
@@ -31,12 +29,12 @@ public class HolidayController {
         }
     }
     
-    @PostMapping("/admin/holidays/add")
+    @PostMapping("/holidays/add")
     public Holiday createHoliday(@RequestBody Holiday holiday) {
         return holidayService.createHoliday(holiday);
     }
     
-    @PutMapping("/admin/holidays/{id}")
+    @PutMapping("/holidays/{id}")
     public ResponseEntity<Holiday> updateHoliday(@PathVariable Long id, @RequestBody Holiday holidayDetails) {
         Holiday updatedHoliday = holidayService.updateHoliday(id, holidayDetails);
         if (updatedHoliday != null) {
@@ -46,18 +44,18 @@ public class HolidayController {
         }
     }
     
-    @DeleteMapping("/admin/holidays/{id}")
+    @DeleteMapping("/holidays/{id}")
     public ResponseEntity<Void> deleteHoliday(@PathVariable Long id) {
         holidayService.deleteHoliday(id);
         return ResponseEntity.noContent().build();
     }
     
-    @GetMapping("/adminuser/holidays/search")
+    @GetMapping("/holidays/search")
     public List<Holiday> searchHolidays(@RequestParam String query) {
         return holidayService.searchHolidays(query);
     }
     
-    @GetMapping("/user/holidays/upcoming")
+    @GetMapping("/holidays/upcoming")
     public List<Holiday> getUpcomingHolidays() {
         return holidayService.getUpcomingHolidays();
     }

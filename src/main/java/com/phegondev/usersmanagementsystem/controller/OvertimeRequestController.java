@@ -12,13 +12,12 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-//@CrossOrigin(origins = "http://localhost:5173")
 public class OvertimeRequestController {
 
     @Autowired
     private OvertimeRequestService service;
 
-    @PostMapping("/user/overtime/add")
+    @PostMapping("/overtime/add")
     public ResponseEntity<OvertimeRequest> createOvertimeRequest(@RequestBody OvertimeRequest request) {
         // Validate time
         if (request.getEndTime().isBefore(request.getStartTime())) {
@@ -34,7 +33,7 @@ public class OvertimeRequestController {
         return ResponseEntity.ok(service.save(request));
     }
 
-    @GetMapping("/user/overtime")
+    @GetMapping("/overtime")
     public ResponseEntity<List<OvertimeRequest>> getOvertimeRequestsByEmployeeId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         OurUsers user = (OurUsers) authentication.getPrincipal();
@@ -42,7 +41,7 @@ public class OvertimeRequestController {
         return requests.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(requests);
     }
 
-    @GetMapping("/admin/overtime/all")
+    @GetMapping("/overtime/all")
     public List<OvertimeRequest> getAllOvertimeRequests(
             @RequestParam(required = false) String status) {
         if (status != null) {
@@ -51,7 +50,7 @@ public class OvertimeRequestController {
         return service.getAll();
     }
 
-    @PutMapping("/admin/overtime/{id}/status")
+    @PutMapping("/overtime/{id}/status")
     public ResponseEntity<OvertimeRequest> updateStatus(
             @PathVariable Long id,
             @RequestParam String status) {
@@ -60,7 +59,7 @@ public class OvertimeRequestController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PutMapping("/admin/overtime/{id}")
+    @PutMapping("/overtime/{id}")
     public ResponseEntity<OvertimeRequest> updateOvertimeRequest(
             @PathVariable Long id,
             @RequestBody OvertimeRequest requestDetails) {
@@ -72,13 +71,13 @@ public class OvertimeRequestController {
         }
     }
 
-    @DeleteMapping("/admin/overtime/{id}")
+    @DeleteMapping("/overtime/{id}")
     public ResponseEntity<Void> deleteOvertimeRequest(@PathVariable Long id) {
         service.deleteById(id);
         return ResponseEntity.noContent().build();
     }
     
-    @GetMapping("/admin/overtime/{id}")
+    @GetMapping("/overtime/{id}")
     public ResponseEntity<OvertimeRequest> getOvertimeRequestById(
             @PathVariable Long id) {
         return service.getById(id)
