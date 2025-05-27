@@ -15,7 +15,6 @@ import com.phegondev.usersmanagementsystem.service.UsersManagementService;
 import com.phegondev.usersmanagementsystem.repository.UsersRepo;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:5173")
 public class UserManagementController {
 
     @Autowired
@@ -26,8 +25,7 @@ public class UserManagementController {
 
     // Register
     // Register
-    @PostMapping("/admin/register")
-    @PreAuthorize("hasAuthority('admin')")
+    @PostMapping("/register")
     public ResponseEntity<ReqRes> register(@RequestBody ReqRes reg) {
         System.out.println("Received registration request: " + reg);
         ReqRes response = usersManagementService.register(reg);
@@ -48,29 +46,25 @@ public class UserManagementController {
     }
 
     // Get all users - permit only to admin
-    @GetMapping("/admin/get-all-users")
-    @PreAuthorize("hasAuthority('admin')")
+    @GetMapping("/get-all-users")
     public ResponseEntity<ReqRes> getAllUsers() {
         return ResponseEntity.ok(usersManagementService.getAllUsers());
     }
 
     // Get User by ID
-    @GetMapping("/admin/get-user/{userId}")
-    @PreAuthorize("hasAuthority('admin')")
+    @GetMapping("/get-user/{userId}")
     public ResponseEntity<ReqRes> getUserById(@PathVariable Integer userId) {
         return ResponseEntity.ok(usersManagementService.getUserByID(userId));
     }
 
     // Update user
-    @PutMapping("/admin/update/{userId}")
-    @PreAuthorize("hasAuthority('admin')")
+    @PutMapping("/update/{userId}")
     public ResponseEntity<ReqRes> updateUser(@PathVariable Integer userId, @RequestBody OurUsers reqRes) {
         return ResponseEntity.ok(usersManagementService.updateUser(userId, reqRes));
     }
 
     // Get the profile
-    @GetMapping("/common/get-profile")
-    // @PreAuthorize("hasAnyAuthority('admin', 'user')")
+    @GetMapping("/get-profile")
     public ResponseEntity<ReqRes> getMyProfile() {
 
         // Get the Authentication object for the current user
@@ -82,14 +76,12 @@ public class UserManagementController {
     }
 
     // Delete User
-    @DeleteMapping("/admin/deleteUser/{userId}")
-    @PreAuthorize("hasAuthority('admin')")
+    @DeleteMapping("/deleteUser/{userId}")
     public ResponseEntity<ReqRes> deleteUser(@PathVariable Integer userId) {
         return ResponseEntity.ok(usersManagementService.deleteUser(userId));
     }
 
-    @GetMapping("/common/get-complete-profile")
-    // @PreAuthorize("hasAnyAuthority('admin', 'user')")
+    @GetMapping("/get-complete-profile")
     public ResponseEntity<ReqRes> getCompleteProfile() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
@@ -103,7 +95,7 @@ public class UserManagementController {
         return ResponseEntity.status(response.getStatusCode()).body(response);
     }
 
-    @GetMapping("/admin/managers")
+    @GetMapping("/managers")
     public ResponseEntity<List<OurUsers>> getAllManagers() {
         List<OurUsers> managers = usersRepo.findAllByRole("manager");
         return ResponseEntity.ok(managers);

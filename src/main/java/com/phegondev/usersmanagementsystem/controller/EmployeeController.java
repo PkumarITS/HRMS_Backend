@@ -17,9 +17,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
-@PreAuthorize("hasAnyAuthority('admin')")
-@RequestMapping("/admin/employees")
-@CrossOrigin(origins = "http://localhost:5173")
+@RequestMapping("/employees")
 public class EmployeeController {
 
     @Autowired
@@ -78,23 +76,6 @@ public class EmployeeController {
         }
     }
 
-    // @GetMapping("/all-employees")
-    // public ResponseEntity<?> getAllEmployeesBasicInfo() {
-    // try {
-    // List<Map<String, String>> employees =
-    // employeeService.getAllEmployeesBasicInfo();
-    // return ResponseEntity.ok(Map.of(
-    // "status", "success",
-    // "data", employees
-    // ));
-    // } catch (Exception e) {
-    // return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-    // .body(Map.of(
-    // "status", "error",
-    // "message", "Failed to fetch employees: " + e.getMessage()
-    // ));
-    // }
-    // }
     @GetMapping("/{id}")
     public ResponseEntity<?> getEmployeeById(@PathVariable Long id) {
         try {
@@ -147,7 +128,8 @@ public class EmployeeController {
                     if (existingEmployee.getPersonal() == null) {
                         existingEmployee.setPersonal(employeeDetails.getPersonal());
                     } else {
-                        existingEmployee.getPersonal().setEmploymentStatus(employeeDetails.getPersonal().getEmploymentStatus());
+                        existingEmployee.getPersonal()
+                                .setEmploymentStatus(employeeDetails.getPersonal().getEmploymentStatus());
                         existingEmployee.getPersonal().setEmpId(employeeDetails.getPersonal().getEmpId());
                         existingEmployee.getPersonal().setFirstName(employeeDetails.getPersonal().getFirstName());
                         existingEmployee.getPersonal().setMiddleName(employeeDetails.getPersonal().getMiddleName());
@@ -306,7 +288,6 @@ public class EmployeeController {
     }
 
     @GetMapping("/by-emp-id/{empId}")
-    @PreAuthorize("hasAuthority('admin')")
     public ResponseEntity<?> getEmployeeByEmpId(@PathVariable String empId) {
         try {
             Optional<Employee> employee = employeeService.getEmployeeByEmpId(empId);
@@ -326,19 +307,18 @@ public class EmployeeController {
     }
 
     @GetMapping("/next-emp-id")
-@PreAuthorize("hasAuthority('admin')")
-public ResponseEntity<?> getNextEmpId(@RequestParam String employmentStatus) {
-    try {
-        String nextEmpId = employeeService.generateNextEmpId(employmentStatus);
-        return ResponseEntity.ok(Map.of(
-                "status", "success",
-                "data", nextEmpId));
-    } catch (Exception e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(Map.of(
-                        "status", "error",
-                        "message", "Failed to generate employee ID: " + e.getMessage()));
+    public ResponseEntity<?> getNextEmpId(@RequestParam String employmentStatus) {
+        try {
+            String nextEmpId = employeeService.generateNextEmpId(employmentStatus);
+            return ResponseEntity.ok(Map.of(
+                    "status", "success",
+                    "data", nextEmpId));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of(
+                            "status", "error",
+                            "message", "Failed to generate employee ID: " + e.getMessage()));
+        }
     }
-}
 
 }
