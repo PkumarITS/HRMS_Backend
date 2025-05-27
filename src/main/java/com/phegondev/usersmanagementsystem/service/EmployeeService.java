@@ -108,19 +108,39 @@ public class EmployeeService {
         return employeeRepository.findByPersonalEmpId(empId);
     }
 
-    public String generateNextEmpId() {
+    public String generateNextEmpId(String employmentStatus) {
     List<String> existingIds = employeeRepository.findAllEmployeeIds();
-    if (existingIds.isEmpty()) {
-        return "EMP001";
+    
+    String prefix;
+    switch (employmentStatus) {
+        case "Full-Time Permanent":
+            prefix = "P";
+            break;
+        case "Contract":
+            prefix = "C";
+            break;
+        case "Internship":
+            prefix = "I";
+            break;
+        case "Part-Time":
+            prefix = "F";
+            break;
+        default:
+            prefix = "E"; // default case
     }
     
-    // Extract the highest number and increment
+    if (existingIds.isEmpty()) {
+        return prefix + "001";
+    }
+    
+    // Filter IDs with the same prefix and get the highest number
     int maxNumber = existingIds.stream()
-        .map(id -> id.replace("EMP", ""))
+        .filter(id -> id.startsWith(prefix))
+        .map(id -> id.replace(prefix, ""))
         .mapToInt(Integer::parseInt)
         .max()
         .orElse(0);
     
-    return String.format("EMP%03d", maxNumber + 1);
-    }
+    return String.format("%s%03d", prefix, maxNumber + 1);
+}
 }

@@ -14,9 +14,6 @@ public class Work {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "Employment status is required")
-    private String employmentStatus;
-
     @NotBlank(message = "Department is required")
     private String department;
 
@@ -48,14 +45,6 @@ public class Work {
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public String getEmploymentStatus() {
-		return employmentStatus;
-	}
-
-	public void setEmploymentStatus(String employmentStatus) {
-		this.employmentStatus = employmentStatus;
 	}
 
 	public String getDepartment() {

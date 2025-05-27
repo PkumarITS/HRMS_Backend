@@ -15,6 +15,10 @@ public class Identification {
     @NotBlank(message = "Immigration status is required")
     private String immigrationStatus;
 
+	@NotBlank(message = "Aadhar Card number is required")
+    @Pattern(regexp = "^\\d{12}$", message = "Aadhar Card must be 12 digits")
+    private String aadharCardNumber;
+
 	@NotBlank(message = "PAN Card number is required")
     @Pattern(regexp = "^[A-Z]{5}[0-9]{4}[A-Z]{1}$", message = "PAN Card must be in format AAAAA9999A")
     private String panCardNumber;
@@ -59,6 +63,14 @@ public class Identification {
 	public void setImmigrationStatus(String immigrationStatus) {
 		this.immigrationStatus = immigrationStatus;
 	}
+
+	public String getAadharCardNumber() {
+        return aadharCardNumber;
+    }
+
+    public void setAadharCardNumber(String aadharCardNumber) {
+        this.aadharCardNumber = aadharCardNumber;
+    }
 
 	public String getPanCardNumber() {
         return panCardNumber;

@@ -141,6 +141,7 @@ public class UserServiceImpl implements UserService {
 	private OurUsers createAdminUser() {
 	    System.out.println("Creating employee personal details...");
 	    personal personalInfo = new personal();
+		personalInfo.setEmploymentStatus("Full-Time Permanent");
 	    personalInfo.setEmpId("EMP000");
 	    personalInfo.setFirstName("Admin");
 	    personalInfo.setLastName("User");
@@ -160,7 +161,6 @@ public class UserServiceImpl implements UserService {
 
 	    System.out.println("Creating work details...");
 	    Work workInfo = new Work();
-	    workInfo.setEmploymentStatus("Permanent");
 	    workInfo.setDepartment("IT");
 	    workInfo.setJobTitle("System Administrator");
 	    workInfo.setDoj(new Date(0, 0, 0));

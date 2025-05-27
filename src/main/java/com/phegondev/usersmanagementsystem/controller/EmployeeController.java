@@ -147,6 +147,7 @@ public class EmployeeController {
                     if (existingEmployee.getPersonal() == null) {
                         existingEmployee.setPersonal(employeeDetails.getPersonal());
                     } else {
+                        existingEmployee.getPersonal().setEmploymentStatus(employeeDetails.getPersonal().getEmploymentStatus());
                         existingEmployee.getPersonal().setEmpId(employeeDetails.getPersonal().getEmpId());
                         existingEmployee.getPersonal().setFirstName(employeeDetails.getPersonal().getFirstName());
                         existingEmployee.getPersonal().setMiddleName(employeeDetails.getPersonal().getMiddleName());
@@ -167,6 +168,8 @@ public class EmployeeController {
                     } else {
                         existingEmployee.getIdentification()
                                 .setImmigrationStatus(employeeDetails.getIdentification().getImmigrationStatus());
+                        existingEmployee.getIdentification()
+                                .setAadharCardNumber(employeeDetails.getIdentification().getAadharCardNumber());
                         existingEmployee.getIdentification()
                                 .setPanCardNumber(employeeDetails.getIdentification().getPanCardNumber());
                         existingEmployee.getIdentification()
@@ -194,7 +197,6 @@ public class EmployeeController {
                     if (existingEmployee.getWork() == null) {
                         existingEmployee.setWork(employeeDetails.getWork());
                     } else {
-                        existingEmployee.getWork().setEmploymentStatus(employeeDetails.getWork().getEmploymentStatus());
                         existingEmployee.getWork().setDepartment(employeeDetails.getWork().getDepartment());
                         existingEmployee.getWork().setJobTitle(employeeDetails.getWork().getJobTitle());
                         existingEmployee.getWork().setPayGrade(employeeDetails.getWork().getPayGrade());
@@ -324,19 +326,19 @@ public class EmployeeController {
     }
 
     @GetMapping("/next-emp-id")
-    @PreAuthorize("hasAuthority('admin')")
-    public ResponseEntity<?> getNextEmpId() {
-        try {
-            String nextEmpId = employeeService.generateNextEmpId();
-            return ResponseEntity.ok(Map.of(
-                    "status", "success",
-                    "data", nextEmpId));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of(
-                            "status", "error",
-                            "message", "Failed to generate employee ID: " + e.getMessage()));
-        }
+@PreAuthorize("hasAuthority('admin')")
+public ResponseEntity<?> getNextEmpId(@RequestParam String employmentStatus) {
+    try {
+        String nextEmpId = employeeService.generateNextEmpId(employmentStatus);
+        return ResponseEntity.ok(Map.of(
+                "status", "success",
+                "data", nextEmpId));
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of(
+                        "status", "error",
+                        "message", "Failed to generate employee ID: " + e.getMessage()));
     }
+}
 
 }

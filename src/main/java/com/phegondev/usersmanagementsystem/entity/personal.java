@@ -14,6 +14,9 @@ public class personal {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+	@NotBlank(message = "Employment status is required")
+private String employmentStatus;
+
     @NotBlank(message = "Employee number is required")
     @Size(min = 3, max = 20, message = "Employee number must be between 3-20 characters")
     @Column(unique = true)
@@ -55,6 +58,14 @@ public class personal {
 	public void setId(Long id) {
 		this.id = id;
 	}
+
+	public String getEmploymentStatus() {
+    return employmentStatus;
+}
+
+public void setEmploymentStatus(String employmentStatus) {
+    this.employmentStatus = employmentStatus;
+}
 
 	public String getEmpId() {
 		return empId;
