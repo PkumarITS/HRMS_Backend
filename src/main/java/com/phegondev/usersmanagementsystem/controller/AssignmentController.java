@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:5173")
 public class AssignmentController {
     private final AssignmentService assignmentService;
 
@@ -21,13 +20,13 @@ public class AssignmentController {
         this.assignmentService = assignmentService;
     }
 
-    @GetMapping("/admin/assignments/project/{projectId}")
+    @GetMapping("/assignments/project/{projectId}")
     public ResponseEntity<List<Assignment>> getAssignmentsByProjectId(@PathVariable Long projectId) {
         List<Assignment> assignments = assignmentService.getAssignmentsByProjectId(projectId);
         return ResponseEntity.ok(assignments);
     }
 
-    @PostMapping("/admin/assignments")
+    @PostMapping("/assignments")
     public ResponseEntity<Assignment> createAssignment(@RequestBody AssignmentDTO assignmentDTO) {
         System.out.println("Received request to create assignment with DTO: " + assignmentDTO);
         Assignment assignment = assignmentService.createAssignment(assignmentDTO);
@@ -36,7 +35,7 @@ public class AssignmentController {
     }
 
 
-    @PutMapping("/admin/assignments/{id}")
+    @PutMapping("/assignments/{id}")
     public ResponseEntity<Assignment> updateAssignment(
             @PathVariable Long id,
             @RequestBody AssignmentDTO assignmentDTO) {
@@ -44,7 +43,7 @@ public class AssignmentController {
         return ResponseEntity.ok(assignment);
     }
 
-    @DeleteMapping("/admin/assignments/{id}")
+    @DeleteMapping("/assignments/{id}")
     public ResponseEntity<Void> deleteAssignment(@PathVariable Long id) {
         assignmentService.deleteAssignment(id);
         return ResponseEntity.noContent().build();

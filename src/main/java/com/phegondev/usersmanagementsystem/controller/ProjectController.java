@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:5173")
 public class ProjectController {
     private final ProjectService projectService;
 
@@ -23,7 +22,7 @@ public class ProjectController {
         this.projectService = projectService;
     }
 
-    @GetMapping("/admin/projects")
+    @GetMapping("/projects")
     public ResponseEntity<List<ProjectDTO>> getAllProjects(
             @RequestParam(required = false) String status,
             @RequestParam(required = false) String search,
@@ -78,19 +77,19 @@ public class ProjectController {
     }
     
 
-    @GetMapping("/admin/projects/{id}")
+    @GetMapping("/projects/{id}")
     public ResponseEntity<Project> getProjectById(@PathVariable Long id) {
         Project project = projectService.getProjectById(id);
         return ResponseEntity.ok(project);
     }
 
-    @PostMapping("/admin/projects/add")
+    @PostMapping("/projects/add")
     public ResponseEntity<Project> createProject(@RequestBody ProjectDTO projectDTO) {
         Project project = projectService.createProject(projectDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(project);
     }
 
-    @PutMapping("/admin/projects/{id}")
+    @PutMapping("/projects/{id}")
     public ResponseEntity<Project> updateProject(
             @PathVariable Long id,
             @RequestBody ProjectDTO projectDTO) {
@@ -98,7 +97,7 @@ public class ProjectController {
         return ResponseEntity.ok(project);
     }
 
-    @PatchMapping("/admin/projects/{id}/status")
+    @PatchMapping("/projects/{id}/status")
     public ResponseEntity<Project> updateProjectStatus(
             @PathVariable Long id,
             @RequestBody String status) {
@@ -106,7 +105,7 @@ public class ProjectController {
         return ResponseEntity.ok(project);
     }
 
-    @PatchMapping("/admin/projects/{id}/progress")
+    @PatchMapping("/projects/{id}/progress")
     public ResponseEntity<Project> updateProjectProgress(
             @PathVariable Long id,
             @RequestBody Integer progress) {
@@ -114,25 +113,25 @@ public class ProjectController {
         return ResponseEntity.ok(project);
     }
 
-    @DeleteMapping("/admin/projects/{id}")
+    @DeleteMapping("/projects/{id}")
     public ResponseEntity<Void> deleteProject(@PathVariable Long id) {
         projectService.deleteProject(id);
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/admin/projects/count")
+    @GetMapping("/projects/count")
     public ResponseEntity<Long> countProjects() {
         Long count = projectService.countProjects();
         return ResponseEntity.ok(count);
     }
 
-    @GetMapping("/admin/projects/status-count")
+    @GetMapping("/projects/status-count")
     public ResponseEntity<Map<String, Long>> countProjectsByStatus() {
         Map<String, Long> statusCounts = projectService.countProjectsByStatus();
         return ResponseEntity.ok(statusCounts);
     }
     
-    @GetMapping("/user/projects/by-emp")
+    @GetMapping("/projects/by-emp")
     public ResponseEntity<List<ProjectDTO>> getProjectsByEmpId() {
     	   Authentication authentication = SecurityContextHolder.getContext().getAuthentication();      
           
